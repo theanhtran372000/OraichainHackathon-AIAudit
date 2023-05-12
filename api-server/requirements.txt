@@ -1,0 +1,7 @@
+Flask
+onnx
+onnxruntime
+opencv-python
+PyYAML
+torch
+torchvision

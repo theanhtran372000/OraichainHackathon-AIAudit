@@ -1,0 +1,29 @@
+app:
+  host: 0.0.0.0
+  port: 8000
+  threaded: True
+  tmp_dir: 'save/tmp'
+
+yunet:
+  model_path: models/yunet/models/face_detection_yunet_120x160.onnx
+  input_shape: 160,120
+  score_th: 0.6
+  nms_th: 0.3
+  topk: 500
+  keep_topk: 50
+
+  exts:
+    - jpg
+    - jpeg
+    - png
+  
+mobilenetv2:
+  model_path: models/mobilenetv2/models/mobilenet_v2.onnx
+  label_path: models/mobilenetv2/save/imagenet_classes.txt
+  input_shape: 224,224
+  topk: 5
+
+  exts:
+    - jpg
+    - jpeg
+    - png
