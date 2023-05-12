@@ -14,7 +14,9 @@
     "@cosmjs/stargate": "^0.29.5"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.1",
-    "@terran-one/cw-simulate": "^2.8.4"
+    "@terran-one/cw-simulate": "https://github.com/oraichain/cw-simulate.git",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "@types/jest": "^29.5.1"
   }
 }

@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
-    "preserveConstEnums": true,
-    "resolveJsonModule": true,
-    "lib": [
-      "esnext"
-    ]
+    "target": "ES2020",
+    "lib": ["ES2020", "dom"],
+    "module": "nodenext",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declaration": false,
+    "outDir": "dist",
+    "typeRoots": ["node_modules/@types"],
+    "allowJs": true,
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*",
-    "codegen/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "ts-node": {
+    "esm": true,
+    "ignore": ["node_modules/(?!@terran-one)"]
+  },
+  "include": ["src/*.ts"],
+  "exclude": ["node_modules"]
 }
