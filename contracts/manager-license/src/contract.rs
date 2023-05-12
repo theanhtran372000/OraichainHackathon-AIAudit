@@ -1,15 +1,17 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, Addr, BankMsg, Binary, Coin, Deps, DepsMut, Env, MessageInfo, Response, StdError,
-    StdResult, SubMsg, Uint128,
+    to_binary, Addr, BankMsg, Binary, Coin, Deps, DepsMut, Env,
+    MessageInfo, Response, StdError, StdResult, SubMsg, Uint128,
 };
 use cw2::set_contract_version;
 // use cw2::set_contract_version;
 
 use crate::error::ContractError;
 use crate::msg::{ConfigMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
-use crate::state::{Config, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS, VALID_API};
+use crate::state::{
+    Config, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS, VALID_API,
+};
 
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:manager-license";
@@ -22,7 +24,11 @@ pub fn instantiate(
     _info: MessageInfo,
     _msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
-    set_contract_version(_deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+    set_contract_version(
+        _deps.storage,
+        CONTRACT_NAME,
+        CONTRACT_VERSION,
+    )?;
 
     let config = Config {
         owner: _deps.api.addr_validate(&_msg.owner)?,
@@ -51,10 +57,18 @@ pub fn execute(
             verifier,
             id,
             workers,
-        } => execute_update_validation_api(_deps, _info, verifier, id, workers),
-        ExecuteMsg::RegisterHost {} => execute_register_host(_deps, _info),
-        ExecuteMsg::UpdateConfig(config_msg) => execute_update_config(_deps, _info, config_msg),
-        ExecuteMsg::ClaimReward {} => execute_claim_reward(_deps, _env, _info),
+        } => execute_update_validation_api(
+            _deps, _info, verifier, id, workers,
+        ),
+        ExecuteMsg::RegisterHost {} => {
+            execute_register_host(_deps, _info)
+        }
+        ExecuteMsg::UpdateConfig(config_msg) => {
+            execute_update_config(_deps, _info, config_msg)
+        }
+        ExecuteMsg::ClaimReward {} => {
+            execute_claim_reward(_deps, _env, _info)
+        }
     }
 }
 
@@ -123,7 +137,9 @@ pub fn execute_register_host(
 ) -> Result<Response, ContractError> {
     let fund = _info.funds[0].clone();
 
-    if fund.denom != "orai" && fund.amount == CONFIG.load(_deps.storage)?.register_fee {
+    if fund.denom != "orai"
+        && fund.amount == CONFIG.load(_deps.storage)?.register_fee
+    {
         return Err(ContractError::Unauthorized {});
     }
 
@@ -154,12 +170,16 @@ pub fn execute_update_config(
         return Err(ContractError::Unauthorized {});
     }
     let new_config = Config {
-        owner: _deps
-            .api
-            .addr_validate(&msg.owner.unwrap_or(config.owner.to_string()))?,
+        owner: _deps.api.addr_validate(
+            &msg.owner.unwrap_or(config.owner.to_string()),
+        )?,
         register_fee: msg.register_fee.unwrap_or(config.register_fee),
-        amount_reward: msg.amount_reward.unwrap_or(config.amount_reward),
-        thresh_hold_for: msg.thresh_hold_for.unwrap_or(config.thresh_hold_for),
+        amount_reward: msg
+            .amount_reward
+            .unwrap_or(config.amount_reward),
+        thresh_hold_for: msg
+            .thresh_hold_for
+            .unwrap_or(config.thresh_hold_for),
     };
 
     CONFIG.save(_deps.storage, &new_config)?;
@@ -174,7 +194,8 @@ pub fn execute_claim_reward(
 ) -> Result<Response, ContractError> {
     let amount = REWARDS.load(_deps.storage, &_info.sender)?;
 
-    let balance = _deps.querier.query_balance(_env.contract.address, "orai")?;
+    let balance =
+        _deps.querier.query_balance(_env.contract.address, "orai")?;
 
     if balance.amount.lt(&amount) {
         return Err(ContractError::InsufficientReward {});
@@ -197,14 +218,24 @@ pub fn execute_claim_reward(
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
-pub fn query(_deps: Deps, _env: Env, _msg: QueryMsg) -> StdResult<Binary> {
+pub fn query(
+    _deps: Deps,
+    _env: Env,
+    _msg: QueryMsg,
+) -> StdResult<Binary> {
     match _msg {
-        QueryMsg::ValidApi { verifier, id } => {
-            to_binary(&VALID_API.load(_deps.storage, (&verifier, &id))?)
+        QueryMsg::ValidApi { verifier, id } => to_binary(
+            &VALID_API.load(_deps.storage, (&verifier, &id))?,
+        ),
+        QueryMsg::Config {} => {
+            to_binary(&CONFIG.load(_deps.storage)?)
         }
-        QueryMsg::Config {} => to_binary(&CONFIG.load(_deps.storage)?),
-        QueryMsg::Aggregator {} => to_binary(&AGGREGATOR.load(_deps.storage)?),
-        QueryMsg::Hosts {} => to_binary(&REGISTERED_HOSTS.load(_deps.storage)?),
+        QueryMsg::Aggregator {} => {
+            to_binary(&AGGREGATOR.load(_deps.storage)?)
+        }
+        QueryMsg::Hosts {} => {
+            to_binary(&REGISTERED_HOSTS.load(_deps.storage)?)
+        }
     }
 }
 
