@@ -23,7 +23,7 @@ export const MainSection = () => {
 
         <button className={cx("started")}>
           <img className={cx("button-icon")} src={rocket} alt="Rocket logo" />
-          <p>Get started now</p>
+          <p className={cx("button-text")}>Get started now</p>
           <img className={cx("button-icon")} src={rocket} alt="Rocket logo" />
         </button>
       </div>
