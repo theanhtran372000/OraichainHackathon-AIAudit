@@ -1,6 +1,7 @@
 import { Row, Col, Select } from "antd";
 import classNames from "classnames/bind";
 import style from "./AvailableDatasets.module.sass";
+import SearchBox from "../SearchBox";
 
 const cx = classNames.bind(style);
 // import "./Certificates.css";
@@ -140,7 +141,7 @@ const AvailableDatasets = () => {
           <div className={cx("title")}>Available datasets</div>
         </Col>
         <Col>
-          <div>searchbox</div>
+          <SearchBox />
         </Col>
       </Row>
 

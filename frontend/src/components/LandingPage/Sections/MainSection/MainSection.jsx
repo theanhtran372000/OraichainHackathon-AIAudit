@@ -21,11 +21,11 @@ export const MainSection = () => {
           powered by AI.
         </p>
 
-        <button className={cx("started")}>
+        <a className={cx("started")} href="#tutorial">
           <img className={cx("button-icon")} src={rocket} alt="Rocket logo" />
           <p className={cx("button-text")}>Get started now</p>
           <img className={cx("button-icon")} src={rocket} alt="Rocket logo" />
-        </button>
+        </a>
       </div>
 
       <div className={cx("right-side")}></div>

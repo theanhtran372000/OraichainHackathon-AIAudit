@@ -1,6 +1,7 @@
 import { Row, Col, Select } from "antd";
 import classNames from "classnames/bind";
 import style from "./AppAPI.module.sass";
+import SearchBox from "../SearchBox";
 const cx = classNames.bind(style);
 
 const APICard = ({ apiModel }) => {
@@ -152,7 +153,7 @@ const AppAPI = () => {
           <Row
             style={{ justifyContent: "space-between", alignItems: "center" }}
           >
-            <div>searchbox</div>
+            <SearchBox />
             <div className={cx("title")}>Your APIs</div>
           </Row>
         </Col>

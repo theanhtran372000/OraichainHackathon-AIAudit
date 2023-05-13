@@ -20,18 +20,21 @@
   display: flex
   flex-direction: row
   align-items: center
-  justify-content: space-between
+  justify-content: flex-end
   margin-right: 60px
 
-.navbar .nav
-  font-size: 24px
-  text-decoration: underline
-  font-weight: normal
-  cursor: pointer
+  .nav
+    font-size: 24px
+    // text-decoration: underline
+    font-weight: normal
+    cursor: pointer
 
-.navbar .nav:hover
-  color: var(--blue)
-  transition: all .3s
+    a
+      color: white
+
+      &:hover
+        color: var(--blue)
+        transition: all .3s
 
 .connect
   flex: 1
@@ -55,3 +58,14 @@
   color: var(--blue)
   border: 2px solid var(--blue)
   font-weight: 600
+
+.wallet-addr
+  color: var(--text-color)
+  font-family: var(--font-family)
+  font-size: 24px
+  font-weight: normal
+  transition: all .3s
+  cursor: pointer
+  
+  &:hover
+    color: var(--blue)

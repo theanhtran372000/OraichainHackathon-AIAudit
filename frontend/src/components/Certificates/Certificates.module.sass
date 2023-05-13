@@ -5,6 +5,7 @@
     margin-bottom: 20px
 
     .title
+        font-family: var(--font-family)
         font-style: normal
         font-weight: 600
         font-size: 32px
@@ -14,12 +15,12 @@
 .card
     width: 100%
     // height: 150px
-    margin-top: 20px
+    // margin-top: 20px
     padding: 30px
 
     background-color: #3B3B3B
     border-radius: 8px
-
+    font-family: var(--font-family)
     font-style: normal
     font-weight: 400
     font-size: 18px
@@ -52,10 +53,11 @@
     font-size: 32px
     line-height: 40px
     margin-bottom: 25px
-
+    font-family: var(--font-family)
     letter-spacing: 0.07em
 
 .form-sub-title
+    font-family: var(--font-family)
     font-style: normal
     font-weight: 600
     font-size: 20px
@@ -67,6 +69,7 @@
     align-items: flex-end
 
     label
+        font-family: var(--font-family)
         font-style: normal
         font-weight: 400
         font-size: 14px
@@ -79,6 +82,7 @@
         border-bottom: 2px solid white
         background-color: transparent
         color: white
+        font-family: var(--font-family)
         font-weight: 400
         font-size: 14px
         line-height: 23px
@@ -90,6 +94,7 @@
     padding: 10px
 
 .dataset-name
+    font-family: var(--font-family)
     font-style: normal
     font-weight: 600
     font-size: 20px
@@ -101,12 +106,17 @@
 
 .btn-add-data
     margin-top: 17px
-    button
+    label
+        display: flex
+        align-items: center
+        // text-align: center
+        justify-content: center
         width: 100%
         height: 35px
         background-color: transparent
         border: 2px solid #FFFFFF
         border-radius: 8px
+        font-family: var(--font-family)
         font-style: normal
         font-weight: 400
         font-size: 18px
@@ -121,6 +131,7 @@
         background-color: transparent
         border: 2px solid #FFFFFF
         border-radius: 8px
+        font-family: var(--font-family)
         font-style: normal
         font-weight: 600
         font-size: 24px
@@ -129,3 +140,20 @@
         text-transform: uppercase
 
         color: #FFFFFF
+.link
+    display: block
+    margin-top: 20px
+    &:first-child
+        margin: 0
+
+.scrollable
+    margin-top: 25px
+    margin-left: -5px
+    margin-right: -5px
+    padding: 10px 5px
+    height: 200px
+    // padding-left: 5px
+    // border-bottom: 2px solid #ccc
+    // border-top: 2px solid #ccc
+    overflow-y: scroll
+    box-shadow: 0px 10px 5px rgba(120, 120, 120, 0.5) inset, 0px -10px 5px rgba(120, 120, 120, 0.5) inset
