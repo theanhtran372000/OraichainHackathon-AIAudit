@@ -2,44 +2,57 @@ import classNames from "classnames/bind";
 import style from "./Footer.module.sass";
 import { Row, Col } from "antd";
 import cuNghe from "../../assets/team_logo.png";
+import aiauditlogo from "../../assets/aiaudit_logo.png";
 const cx = classNames.bind(style);
 
 const Footer = () => {
   return (
     <>
       <Row className={cx("footer")}>
-        <Col className={cx("col-1")}>
+        <Col className={cx("my-col-1")}>
           <Row>
+            <img className={cx("aiaudit-logo")} src={aiauditlogo}></img>
+          </Row>
+          <Row className={cx("my-row-2")}>
             <Col>Phone number</Col>
             <Col>0123-323-1331</Col>
           </Row>
-          <Row>
-            <Col>Phone number</Col>
-            <Col>0123-323-1331</Col>
+          <Row className={cx("my-row-2")}>
+            <Col>Email</Col>
+            <Col>abc@gmail.com</Col>
           </Row>
-          <Row>
-            <Col>Phone number</Col>
-            <Col>0123-323-1331</Col>
+          <Row className={cx("my-row-2")}>
+            <Col>Address</Col>
+            <Col>Hanoi, Vietnam</Col>
           </Row>
         </Col>
 
-        <Col className={cx("col-1")}>
-          <Row>
-            <Col>Phone number</Col>
-            <Col>0123-323-1331</Col>
+        <Col className={cx("my-col-1")}>
+          <Row className={cx("explore")}>
+            <Col>EXPLORE</Col>
           </Row>
-          <Row>
-            <Col>Phone number</Col>
-            <Col>0123-323-1331</Col>
-          </Row>
-          <Row>
-            <Col>Phone number</Col>
-            <Col>0123-323-1331</Col>
+
+          <Row style={{ flexDirection: "column" }}>
+            <Row className={cx("my-row-2")}>
+              <Col>Latest</Col>
+              <Col>Sponsors</Col>
+            </Row>
+            <Row className={cx("my-row-2")}>
+              <Col>Ranking</Col>
+              <Col>Connect wallet</Col>
+            </Row>
+            <Row className={cx("my-row-2")}>
+              <Col>Tutorials</Col>
+              <Col>Contact</Col>
+            </Row>
           </Row>
         </Col>
 
         <Col>
-          <img src={cuNghe} />
+          <Row className={cx("cunghe-logo")}>
+            <img src={cuNghe} />
+          </Row>
+          <Row className={cx("madeby")}>Made by Nghe Nhan</Row>
         </Col>
       </Row>
     </>
