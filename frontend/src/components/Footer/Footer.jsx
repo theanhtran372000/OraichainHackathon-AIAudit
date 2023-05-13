@@ -55,7 +55,13 @@ const Footer = () => {
           </Row>
         </Col>
 
-        <Col>
+        <Col
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+          }}
+        >
           <Row className={cx("cunghe-logo")}>
             <img src={cuNghe} />
           </Row>
