@@ -56,4 +56,8 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: start;
+  background-image: url(./assets/main_bg.png);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
 }
