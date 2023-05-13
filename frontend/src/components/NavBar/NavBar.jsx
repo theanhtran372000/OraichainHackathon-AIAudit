@@ -46,14 +46,14 @@ const NavBar = () => {
 
         {/* Connect wallet */}
         <div className={cx("connect")}>
-
-          <button
-            onClick={onConnect}
+          <Link
+            to={username ? "/user/" : ""}
+            onClick={username ? null : onConnect}
             className={cx("connect-button")}
             disabled={username}
           >
             {username ? username : "Connect wallet"}
-          </button>
+          </Link>
         </div>
       </div>
     </section>

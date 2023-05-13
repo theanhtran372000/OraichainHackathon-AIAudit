@@ -5,9 +5,17 @@ const cx = classNames.bind(style);
 import { Link } from "react-router-dom";
 import SearchBox from "../SearchBox";
 import "./Certificates.css";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectWallet } from "../../features/wallet/walletSlice";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import config from "../../config/cosmjs.config";
+import { CONTRACT_MANAGER } from "../../config/constants";
+
+let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
 const Certificate = ({ cert }) => {
-  const { api, dataset, time, model, status } = cert;
+  const { api, task, hearbeat, model_name, status } = cert;
 
   return (
     <Link
@@ -21,38 +29,36 @@ const Certificate = ({ cert }) => {
         <Col span={19}>
           <div className={cx("info")}>{api}</div>
         </Col>
-
         <Col span={5}>
-          <div className={cx("label")}>Dataset</div>
+          <div className={cx("label")}>Task</div>
         </Col>
         <Col span={7}>
-          <div className={cx("info")}>{dataset}</div>
+          <div className={cx("info")}>{task}</div>
         </Col>
         <Col span={5}>
-          <div className={cx("label")}>Issued time</div>
+          <div className={cx("label")}>Heartbeat</div>
         </Col>
         <Col span={7}>
-          <div className={cx("info")}>{time}</div>
+          <div className={cx("info")}>{hearbeat}</div>
         </Col>
 
         <Col span={5}>
           <div className={cx("label")}>Model</div>
         </Col>
         <Col span={7}>
-          <div className={cx("info")}>{model}</div>
+          <div className={cx("info")}>{model_name}</div>
         </Col>
         <Col span={5}>
           <div className={cx("label")}>Status</div>
         </Col>
         <Col span={7}>
-          <div className={cx("info", status == "Success" ? "success" : "")}>
-            {status}
-          </div>
+          <div className={cx("info", model_name ? "success" : "")}>Success</div>
         </Col>
       </Row>
     </Link>
   );
 };
+
 const Dataset = (props) => {
   const { name, owner, samples, used, fee } = props.dataset;
   return (
@@ -144,7 +150,7 @@ const Form = () => {
         <Dataset dataset={dataset} />
         <Dataset dataset={dataset} />
       </div>
-      
+
       <Row className={cx("btn-add-data")}>
         <label htmlFor="filepicker">Add dataset</label>
       </Row>
@@ -181,14 +187,26 @@ const Form = () => {
     </form>
   );
 };
+
 const Certificates = () => {
-  const cert = {
-    api: "https://ai.marketplace.orai.io/face_detection",
-    dataset: "face net",
-    time: "2022-05-03",
-    model: "Yolov5",
-    status: "Success",
-  };
+  const { address } = useSelector(selectWallet);
+
+  const [certs, setCerts] = useState([]);
+
+  useEffect(() => {
+    const fetchCert = async () => {
+      const client = await CosmWasmClient.connect(config_network.rpc);
+      let res = await client.queryContractSmart(CONTRACT_MANAGER, {
+        list_valid_api: {
+          limit: 6,
+          verifier: address,
+        },
+      });
+      console.log(res);
+      setCerts(res.verifier_list);
+    };
+    fetchCert().catch((err) => console.error(err));
+  }, [address]);
 
   return (
     <section
@@ -210,10 +228,9 @@ const Certificates = () => {
 
       <Row style={{ width: "100%" }}>
         <Col span={16} className={cx("big-column")}>
-          <Certificate cert={cert} />
-          <Certificate cert={cert} />
-          <Certificate cert={cert} />
-          <Certificate cert={cert} />
+          {certs.map((cert) => {
+            return <Certificate cert={cert.model.info} />;
+          })}
         </Col>
 
         <Col span={8} className={cx("form-wrapper")}>

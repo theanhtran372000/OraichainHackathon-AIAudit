@@ -19,8 +19,8 @@ async function updateRegisterHost() {
     );
 
     return aggregatorContract.requestValidateApi({
-      verifier: "Dino",
-      id: "image-model-verify",
+      verifier: owner,
+      id: "image-model-verify-2",
       requestType: "image",
       report: {
         image_classification: {
@@ -57,12 +57,12 @@ async function updateRegisterHost() {
 
   let [manager_res, res] = await Promise.all([
     aggregatorContract.request({
-      verifier: "Dino",
-      id: "image-model-verify",
+      verifier: owner,
+      id: "image-model-verify-1",
     }),
     managerContract.validApi({
       verifier: "Dino",
-      id: "image-model-verify",
+      id: "image-model-verify-1",
     }),
   ]);
 
