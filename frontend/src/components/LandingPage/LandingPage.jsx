@@ -5,7 +5,15 @@ import { TutorialSection } from "./Sections/TutorialSection/TutorialSection";
 import { PartnerSection } from "./Sections/PartnerSection/PartnerSection";
 
 const LandingPage = () => {
-  return <div>Landing Page</div>;
+  return (
+    <>
+      <MainSection />
+      <LatestSection />
+      <RankingSection />
+      <TutorialSection />
+      <PartnerSection />
+    </>
+  );
 };
 
 export default LandingPage;
