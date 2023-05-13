@@ -115,6 +115,21 @@ describe("full-flow", () => {
       return aggregatorContract.requestValidateApi({
         verifier: "Dino",
         id: "image-model-verify",
+        requestType: "image",
+        report: {
+          image_classification: {
+            accuracy: 10000,
+            f1_score: 10002,
+            precision: 11111,
+            recall: 22222,
+          },
+        },
+        info: {
+          api: "api",
+          hearbeat: "hearbeat",
+          task: "task",
+          model_name: "model_name",
+        },
       });
     });
 
@@ -135,7 +150,17 @@ describe("full-flow", () => {
       id: "image-model-verify",
     });
 
-    console.log(res.status);
+    // let manager_res = await ManagerContract.validApi({
+    //   verifier: "Dino",
+    //   id: "image-model-verify",
+    // });
+
+    let list_validate = await ManagerContract.listValidApi({
+      limit: 10,
+    });
+
+    // @ts-ignore
+    console.log(list_validate.normal_list[0].model);
 
     expect(res.status).toEqual("success");
   });

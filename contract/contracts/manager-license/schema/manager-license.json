@@ -68,27 +68,7 @@
         ],
         "properties": {
           "update_validation_cert": {
-            "type": "object",
-            "required": [
-              "id",
-              "verifier",
-              "workers"
-            ],
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "verifier": {
-                "type": "string"
-              },
-              "workers": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            },
-            "additionalProperties": false
+            "$ref": "#/definitions/UpdateValidationCertMsg"
           }
         },
         "additionalProperties": false
@@ -173,9 +153,150 @@
         },
         "additionalProperties": false
       },
+      "ImageClassificationReport": {
+        "type": "object",
+        "required": [
+          "accuracy",
+          "f1_score",
+          "precision",
+          "recall"
+        ],
+        "properties": {
+          "accuracy": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "f1_score": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "precision": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "recall": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          }
+        },
+        "additionalProperties": false
+      },
+      "ModelInfo": {
+        "type": "object",
+        "required": [
+          "api",
+          "hearbeat",
+          "model_name",
+          "task"
+        ],
+        "properties": {
+          "api": {
+            "type": "string"
+          },
+          "hearbeat": {
+            "type": "string"
+          },
+          "model_name": {
+            "type": "string"
+          },
+          "task": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ObjectDetectionReport": {
+        "type": "object",
+        "required": [
+          "map",
+          "map_50",
+          "map_75"
+        ],
+        "properties": {
+          "map": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "map_50": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          },
+          "map_75": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0.0
+          }
+        },
+        "additionalProperties": false
+      },
+      "Report": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "image_classification"
+            ],
+            "properties": {
+              "image_classification": {
+                "$ref": "#/definitions/ImageClassificationReport"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "object_detection"
+            ],
+            "properties": {
+              "object_detection": {
+                "$ref": "#/definitions/ObjectDetectionReport"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
       "Uint128": {
         "description": "A thin wrapper around u128 that is using strings for JSON encoding/decoding, such that the full u128 range can be used for clients that convert JSON numbers to floats, like JavaScript and jq.\n\n# Examples\n\nUse `from` to create instances of this and `u128` to get the value out:\n\n``` # use cosmwasm_std::Uint128; let a = Uint128::from(123u128); assert_eq!(a.u128(), 123);\n\nlet b = Uint128::from(42u64); assert_eq!(b.u128(), 42);\n\nlet c = Uint128::from(70u32); assert_eq!(c.u128(), 70); ```",
         "type": "string"
+      },
+      "UpdateValidationCertMsg": {
+        "type": "object",
+        "required": [
+          "id",
+          "info",
+          "report",
+          "verifier",
+          "workers"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/definitions/ModelInfo"
+          },
+          "report": {
+            "$ref": "#/definitions/Report"
+          },
+          "verifier": {
+            "type": "string"
+          },
+          "workers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
       }
     }
   },
@@ -204,6 +325,18 @@
               }
             },
             "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "list_valid_api"
+        ],
+        "properties": {
+          "list_valid_api": {
+            "$ref": "#/definitions/QueryListReport"
           }
         },
         "additionalProperties": false
@@ -247,7 +380,29 @@
         },
         "additionalProperties": false
       }
-    ]
+    ],
+    "definitions": {
+      "QueryListReport": {
+        "type": "object",
+        "required": [
+          "limit"
+        ],
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "uint8",
+            "minimum": 0.0
+          },
+          "verifier": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
   },
   "migrate": null,
   "sudo": null,
@@ -305,10 +460,357 @@
         }
       }
     },
+    "list_valid_api": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ListReportResponse",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "verifier_list"
+          ],
+          "properties": {
+            "verifier_list": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/VerifierListResponse"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "normal_list"
+          ],
+          "properties": {
+            "normal_list": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/NormalListResponse"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "definitions": {
+        "ImageClassificationReport": {
+          "type": "object",
+          "required": [
+            "accuracy",
+            "f1_score",
+            "precision",
+            "recall"
+          ],
+          "properties": {
+            "accuracy": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "f1_score": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "precision": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "recall": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        },
+        "Model": {
+          "type": "object",
+          "required": [
+            "info",
+            "report"
+          ],
+          "properties": {
+            "info": {
+              "$ref": "#/definitions/ModelInfo"
+            },
+            "report": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ModelInfo": {
+          "type": "object",
+          "required": [
+            "api",
+            "hearbeat",
+            "model_name",
+            "task"
+          ],
+          "properties": {
+            "api": {
+              "type": "string"
+            },
+            "hearbeat": {
+              "type": "string"
+            },
+            "model_name": {
+              "type": "string"
+            },
+            "task": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "NormalListResponse": {
+          "type": "object",
+          "required": [
+            "id",
+            "model",
+            "verifier"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "model": {
+              "$ref": "#/definitions/Model"
+            },
+            "verifier": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ObjectDetectionReport": {
+          "type": "object",
+          "required": [
+            "map",
+            "map_50",
+            "map_75"
+          ],
+          "properties": {
+            "map": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "map_50": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "map_75": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        },
+        "Report": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "image_classification"
+              ],
+              "properties": {
+                "image_classification": {
+                  "$ref": "#/definitions/ImageClassificationReport"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "object_detection"
+              ],
+              "properties": {
+                "object_detection": {
+                  "$ref": "#/definitions/ObjectDetectionReport"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "VerifierListResponse": {
+          "type": "object",
+          "required": [
+            "id",
+            "model"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "model": {
+              "$ref": "#/definitions/Model"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
     "valid_api": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Boolean",
-      "type": "boolean"
+      "title": "ValidApiResponse",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "none"
+          ]
+        },
+        {
+          "type": "object",
+          "required": [
+            "response"
+          ],
+          "properties": {
+            "response": {
+              "$ref": "#/definitions/Model"
+            }
+          },
+          "additionalProperties": false
+        }
+      ],
+      "definitions": {
+        "ImageClassificationReport": {
+          "type": "object",
+          "required": [
+            "accuracy",
+            "f1_score",
+            "precision",
+            "recall"
+          ],
+          "properties": {
+            "accuracy": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "f1_score": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "precision": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "recall": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        },
+        "Model": {
+          "type": "object",
+          "required": [
+            "info",
+            "report"
+          ],
+          "properties": {
+            "info": {
+              "$ref": "#/definitions/ModelInfo"
+            },
+            "report": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ModelInfo": {
+          "type": "object",
+          "required": [
+            "api",
+            "hearbeat",
+            "model_name",
+            "task"
+          ],
+          "properties": {
+            "api": {
+              "type": "string"
+            },
+            "hearbeat": {
+              "type": "string"
+            },
+            "model_name": {
+              "type": "string"
+            },
+            "task": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ObjectDetectionReport": {
+          "type": "object",
+          "required": [
+            "map",
+            "map_50",
+            "map_75"
+          ],
+          "properties": {
+            "map": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "map_50": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            },
+            "map_75": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
+            }
+          },
+          "additionalProperties": false
+        },
+        "Report": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "image_classification"
+              ],
+              "properties": {
+                "image_classification": {
+                  "$ref": "#/definitions/ImageClassificationReport"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": [
+                "object_detection"
+              ],
+              "properties": {
+                "object_detection": {
+                  "$ref": "#/definitions/ObjectDetectionReport"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      }
     }
   }
 }

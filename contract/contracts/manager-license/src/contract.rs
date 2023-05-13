@@ -8,9 +8,14 @@ use cw2::set_contract_version;
 // use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{ConfigMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{
+    ConfigMsg, ExecuteMsg, InstantiateMsg, ListReportResponse,
+    NormalListResponse, QueryListReport, QueryMsg,
+    UpdateValidationCertMsg, ValidApiResponse, VerifierListResponse,
+};
 use crate::state::{
-    Config, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS, VALID_API,
+    Config, Model, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS,
+    VALID_MODEL,
 };
 
 // version info for migration info
@@ -53,13 +58,9 @@ pub fn execute(
         ExecuteMsg::UpdateAggregator { aggregator } => {
             execute_update_aggregator(_deps, _info, aggregator)
         }
-        ExecuteMsg::UpdateValidationCert {
-            verifier,
-            id,
-            workers,
-        } => execute_update_validation_api(
-            _deps, _info, verifier, id, workers,
-        ),
+        ExecuteMsg::UpdateValidationCert(msg) => {
+            execute_update_validation_api(_deps, _info, msg)
+        }
         ExecuteMsg::RegisterHost {} => {
             execute_register_host(_deps, _info)
         }
@@ -93,9 +94,7 @@ pub fn execute_update_aggregator(
 pub fn execute_update_validation_api(
     _deps: DepsMut,
     _info: MessageInfo,
-    verifier: String,
-    id: String,
-    workers: Vec<String>,
+    msg: UpdateValidationCertMsg,
 ) -> Result<Response, ContractError> {
     if _info.sender != AGGREGATOR.load(_deps.storage)? {
         return Err(ContractError::Unauthorized {});
@@ -103,7 +102,8 @@ pub fn execute_update_validation_api(
 
     let config = CONFIG.load(_deps.storage)?;
 
-    let workers: StdResult<Vec<Addr>> = workers
+    let workers: StdResult<Vec<Addr>> = msg
+        .workers
         .iter()
         .map(|worker| _deps.api.addr_validate(worker))
         .collect();
@@ -123,12 +123,19 @@ pub fn execute_update_validation_api(
         )?;
     }
 
-    VALID_API.save(_deps.storage, (&verifier, &id), &true)?;
+    VALID_MODEL.save(
+        _deps.storage,
+        (&msg.verifier, &msg.id),
+        &Model {
+            info: msg.info,
+            report: msg.report,
+        },
+    )?;
 
     Ok(Response::new()
         .add_attribute("action", "update_validation_api")
-        .add_attribute("verifier", &verifier)
-        .add_attribute("id", &id))
+        .add_attribute("verifier", &msg.verifier)
+        .add_attribute("id", &msg.id))
 }
 
 pub fn execute_register_host(
@@ -225,11 +232,14 @@ pub fn query(
 ) -> StdResult<Binary> {
     match _msg {
         QueryMsg::ValidApi { verifier, id } => {
-            let api = VALID_API
+            let api = VALID_MODEL
                 .may_load(_deps.storage, (&verifier, &id))?;
             match api {
-                Some(_) => to_binary(&true),
-                None => to_binary(&false),
+                Some(api) => {
+                    to_binary(&ValidApiResponse::Response(api))
+                }
+                None => to_binary(&ValidApiResponse::None),
+
             }
         }
         QueryMsg::Config {} => {
@@ -241,6 +251,57 @@ pub fn query(
         QueryMsg::Hosts {} => {
             to_binary(&REGISTERED_HOSTS.load(_deps.storage)?)
         }
+        QueryMsg::ListValidApi(msg) => {
+            to_binary(&query_list_api(_deps, msg)?)
+        }
+    }
+}
+
+fn query_list_api(
+    _deps: Deps,
+    msg: QueryListReport,
+) -> StdResult<ListReportResponse> {
+    if let Some(verifier) = msg.verifier {
+        let list: StdResult<Vec<(String, Model)>> = VALID_MODEL
+            .prefix(&verifier)
+            .range(
+                _deps.storage,
+                None,
+                None,
+                cosmwasm_std::Order::Descending,
+            )
+            .take(msg.limit as usize)
+            .collect();
+        Ok(ListReportResponse::VerifierList(
+            list?
+                .iter()
+                .map(|result| VerifierListResponse {
+                    id: result.0.clone(),
+                    model: result.1.clone(),
+                })
+                .collect(),
+        ))
+    } else {
+        let list: StdResult<Vec<((String, String), Model)>> =
+            VALID_MODEL
+                .range(
+                    _deps.storage,
+                    None,
+                    None,
+                    cosmwasm_std::Order::Descending,
+                )
+                .take(msg.limit as usize)
+                .collect();
+        Ok(ListReportResponse::NormalList(
+            list?
+                .iter()
+                .map(|result| NormalListResponse {
+                    id: result.0 .1.clone(),
+                    verifier: result.0 .0.clone(),
+                    model: result.1.clone(),
+                })
+                .collect(),
+        ))
     }
 }
 

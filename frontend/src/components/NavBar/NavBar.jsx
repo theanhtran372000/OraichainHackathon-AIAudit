@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 
 import logo from "../../assets/aiaudit_logo_small.png";
+import { useDispatch, useSelector } from "react-redux";
+import { connectWallet, selectWallet } from "../../features/wallet/walletSlice";
 
 const cx = classNames.bind(style);
 
@@ -11,6 +13,15 @@ const NavBar = () => {
   const [logIn, setLogIn] = useState(null);
 
   const [walletAdr, setWalletAddr] = useState("#1231...6ef12");
+
+  const dispatch = useDispatch();
+
+  const { username } = useSelector(selectWallet);
+
+  const onConnect = async (e) => {
+    e.preventDefault();
+    dispatch(connectWallet());
+  };
 
   return (
     <section className={cx("container", "navbar-section")}>
@@ -35,15 +46,14 @@ const NavBar = () => {
 
         {/* Connect wallet */}
         <div className={cx("connect")}>
-          {!logIn ? (
-            <button onClick={setLogIn(true)} className={cx("connect-button")}>
-              Connect wallet
-            </button>
-          ) : (
-            <Link to="/user/">
-              <a className={cx("wallet-addr")}>{walletAdr}</a>
-            </Link>
-          )}
+
+          <button
+            onClick={onConnect}
+            className={cx("connect-button")}
+            disabled={username}
+          >
+            {username ? username : "Connect wallet"}
+          </button>
         </div>
       </div>
     </section>

@@ -62,6 +62,8 @@ export const LatestSection = () => {
         {certs.map((e) => (
           <Cert cert={e} />
         ))}
+
+
       </div>
     </section>
   );

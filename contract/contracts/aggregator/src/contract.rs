@@ -2,18 +2,26 @@
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
     to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response,
-    StdResult, WasmMsg,
+    StdError, StdResult, WasmMsg,
 };
-use manager_license::msg::ExecuteMsg as ManagerLiscenseExecuteMsg;
+use manager_license::msg::{
+    ExecuteMsg as ManagerLiscenseExecuteMsg, UpdateValidationCertMsg,
+    ValidApiResponse,
+};
+use manager_license::state::{
+    ImageClassificationReport, ObjectDetectionReport, Report,
+};
 // use cw2::set_contract_version;
 
 use crate::error::ContractError;
+
 use crate::msg::{
     ExecuteMsg, InstantiateMsg, QueryMsg, RequestResponse,
     RequestValidateMsg,
 };
 use crate::state::{
-    ValidateAPIRequest, ValidateAPIStatus, MAGANAGER, REQUESTS,
+    ContributeRequest, RequestType, ValidateAPIRequest,
+    ValidateAPIStatus, MAGANAGER, REQUESTS,
 };
 
 use crate::querier;
@@ -60,13 +68,24 @@ fn execute_request_validate_api(
 ) -> Result<Response, ContractError> {
     let mut response = Response::new();
 
+    match msg.request_type {
+        RequestType::Image => {
+            if let Report::ObjectDetection(_) = msg.report {
+                return Err(ContractError::WrongReportType {});
+            }
+        }
+        RequestType::Object => {
+            return Err(ContractError::WrongReportType {})
+        }
+    }
+
     let is_validate = querier::is_existed_api(
         _deps.as_ref(),
         msg.verifier.clone(),
         msg.id.clone(),
     )?;
 
-    if is_validate {
+    if let ValidApiResponse::Response(_) = is_validate {
         return Err(ContractError::Validated {});
     }
 
@@ -79,7 +98,24 @@ fn execute_request_validate_api(
 
     let updated_request = match request_status {
         ValidateAPIStatus::WaitForHost(mut api) => {
-            api.contributers.push(_info.sender.clone());
+            // validate request
+            match api.request_type {
+                RequestType::Image => {
+                    if let Report::ObjectDetection(_) = msg.report {
+                        return Err(
+                            ContractError::WrongReportType {},
+                        );
+                    }
+                }
+                RequestType::Object => {
+                    return Err(ContractError::WrongReportType {})
+                }
+            }
+            api.contributers.push(ContributeRequest {
+                address: _info.sender.clone(),
+                report: msg.report,
+            });
+
             REQUESTS.save(
                 _deps.storage,
                 (&msg.verifier, &msg.id),
@@ -89,7 +125,12 @@ fn execute_request_validate_api(
         }
         ValidateAPIStatus::NotExisted => {
             let new_request = ValidateAPIRequest {
-                contributers: [_info.sender.clone()].to_vec(),
+                request_type: msg.request_type,
+                contributers: [ContributeRequest {
+                    address: _info.sender.clone(),
+                    report: msg.report,
+                }]
+                .to_vec(),
                 // set deadline or 30 days
                 deadline: msg.deadline.unwrap_or(
                     _env.block.height + 60 * 60 * 24 * 30 / 5,
@@ -120,18 +161,142 @@ fn execute_request_validate_api(
 
     if let ValidateAPIStatus::Success = request_status {
         let manager = MAGANAGER.load(_deps.storage)?;
+
         let workers = updated_request
             .contributers
             .iter()
-            .map(|c| c.to_string())
+            .map(|c| c.address.to_string())
             .collect();
+
+        // Aggregate reports
+
+        let report = match updated_request.request_type {
+            RequestType::Image => {
+                let result_reports: StdResult<Vec<ImageClassificationReport>> = updated_request
+                    .contributers
+                    .iter()
+                    .map(|request| -> StdResult<ImageClassificationReport> {
+                        if let Report::ImageClassification(report) = request.report.clone() {
+                            Ok(report)
+                        } else {
+                            Err(StdError::ParseErr {
+                                target_type: "ImageClassificationReport".into(),
+                                msg: "ParseError".into(),
+                            })
+                        }
+                    })
+                    .collect();
+
+                let reports = result_reports?;
+
+                let mut accuracies: Vec<u32> =
+                    reports.iter().map(|r| r.accuracy).collect();
+                accuracies.sort();
+                let mut f1_scores: Vec<u32> =
+                    reports.iter().map(|r| r.f1_score).collect();
+                f1_scores.sort();
+                let mut precisions: Vec<u32> =
+                    reports.iter().map(|r| r.precision).collect();
+                precisions.sort();
+                let mut recalls: Vec<u32> =
+                    reports.iter().map(|r| r.recall).collect();
+                recalls.sort();
+
+                let len = reports.len();
+
+                if len % 2 == 0 {
+                    Report::ImageClassification(
+                        ImageClassificationReport {
+                            accuracy: (accuracies[len / 2 - 1]
+                                + accuracies[len / 2])
+                                / 2,
+                            f1_score: (f1_scores[len / 2 - 1]
+                                + f1_scores[len / 2])
+                                / 2,
+                            precision: (precisions[len / 2 - 1]
+                                + precisions[len / 2])
+                                / 2,
+                            recall: (recalls[len / 2 - 1]
+                                + recalls[len / 2])
+                                / 2,
+                        },
+                    )
+                } else {
+                    Report::ImageClassification(
+                        ImageClassificationReport {
+                            accuracy: accuracies[len / 2],
+                            f1_score: f1_scores[len / 2],
+                            precision: precisions[len / 2],
+                            recall: recalls[len / 2],
+                        },
+                    )
+                }
+            }
+            RequestType::Object => {
+                let result_reports: StdResult<Vec<ObjectDetectionReport>> = updated_request
+                    .contributers
+                    .iter()
+                    .map(|request| -> StdResult<ObjectDetectionReport> {
+                        if let Report::ObjectDetection(report) = request.report.clone() {
+                            Ok(report)
+                        } else {
+                            Err(StdError::ParseErr {
+                                target_type: "ImageClassificationReport".into(),
+                                msg: "ParseError".into(),
+                            })
+                        }
+                    })
+                    .collect();
+
+                let reports = result_reports?;
+
+                // gather the props
+
+                let mut map: Vec<u32> =
+                    reports.iter().map(|r| r.map).collect();
+                let mut map_50: Vec<u32> =
+                    reports.iter().map(|r| r.map_50).collect();
+                let mut map_75: Vec<u32> =
+                    reports.iter().map(|r| r.map_75).collect();
+
+                // sort to get median
+                map.sort();
+                map_50.sort();
+                map_75.sort();
+
+                let len = reports.len();
+
+                if len % 2 == 0 {
+                    Report::ObjectDetection(ObjectDetectionReport {
+                        map: (map[len / 2 - 1] + map[len / 2]) / 2,
+                        map_50: (map_50[len / 2 - 1]
+                            + map_50[len / 2])
+                            / 2,
+                        map_75: (map_75[len / 2 - 1] + map[len / 2])
+                            / 2,
+                    })
+                } else {
+                    Report::ObjectDetection(ObjectDetectionReport {
+                        map: map[len / 2],
+                        map_50: map_50[len / 2],
+                        map_75: map_75[len / 2],
+                    })
+                }
+            }
+        };
+
         let execute_msg = to_binary(
-            &ManagerLiscenseExecuteMsg::UpdateValidationCert {
-                verifier: msg.verifier.clone(),
-                id: msg.id.clone(),
-                workers,
-            },
+            &ManagerLiscenseExecuteMsg::UpdateValidationCert(
+                UpdateValidationCertMsg {
+                    verifier: msg.verifier.clone(),
+                    id: msg.id.clone(),
+                    workers,
+                    report,
+                    info: msg.info,
+                },
+            ),
         );
+
         let msg = WasmMsg::Execute {
             contract_addr: manager.to_string(),
             msg: execute_msg?,
