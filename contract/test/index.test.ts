@@ -120,6 +120,15 @@ describe("full-flow", () => {
             recall: 22222,
           },
         },
+<<<<<<< Updated upstream
+=======
+        info: {
+          api: "api",
+          hearbeat: "hearbeat",
+          task: "task",
+          model_name: "model_name",
+        },
+>>>>>>> Stashed changes
       });
     });
 
@@ -140,13 +149,22 @@ describe("full-flow", () => {
       id: "image-model-verify",
     });
 
-    let manager_res = await ManagerContract.validApi({
-      verifier: "Dino",
-      id: "image-model-verify",
+    // let manager_res = await ManagerContract.validApi({
+    //   verifier: "Dino",
+    //   id: "image-model-verify",
+    // });
+
+    let list_validate = await ManagerContract.listValidApi({
+      limit: 10,
     });
 
+<<<<<<< Updated upstream
     console.log(res);
     console.log(manager_res);
+=======
+    // @ts-ignore
+    console.log(list_validate.normal_list[0].model);
+>>>>>>> Stashed changes
 
     expect(res.status).toEqual("success");
   });

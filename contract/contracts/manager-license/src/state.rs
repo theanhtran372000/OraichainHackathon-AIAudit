@@ -27,6 +27,20 @@ pub struct ObjectDetectionReport {
 }
 
 #[cw_serde]
+pub struct Model {
+    pub info: ModelInfo,
+    pub report: Report,
+}
+
+#[cw_serde]
+pub struct ModelInfo {
+    model_name: String,
+    api: String,
+    task: String,
+    hearbeat: String,
+}
+
+#[cw_serde]
 pub enum Report {
     ImageClassification(ImageClassificationReport),
     ObjectDetection(ObjectDetectionReport),
@@ -34,7 +48,7 @@ pub enum Report {
 
 pub const AGGREGATOR: Item<Addr> = Item::new("agregator");
 pub const CONFIG: Item<Config> = Item::new("config");
-pub const VALID_API: Map<(&str, &str), Report> =
+pub const VALID_MODEL: Map<(&str, &str), Model> =
     Map::new("valid_api");
 pub const REGISTERED_HOSTS: Item<Vec<Addr>> =
     Item::new("registered_hosts");

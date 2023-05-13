@@ -1,5 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use manager_license::state::Report;
+use manager_license::state::{ModelInfo, Report};
 
 use crate::state::{
     ContributeRequest, RequestType, ValidateAPIStatus,
@@ -17,6 +17,7 @@ pub struct RequestValidateMsg {
     pub id: String,
     pub deadline: Option<u64>,
     pub report: Report,
+    pub info: ModelInfo,
 }
 
 #[cw_serde]
