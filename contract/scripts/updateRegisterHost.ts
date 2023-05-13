@@ -1,7 +1,7 @@
 import { setUp } from "./setUp";
 import { ManagerLicenseClient } from "../artifacts/contracts/ManagerLicense.client";
 import config from "../config";
-// import { coin } from "@cosmjs/proto-signing";
+import { coin } from "@cosmjs/proto-signing";
 
 async function updateRegisterHost() {
   // create wallet

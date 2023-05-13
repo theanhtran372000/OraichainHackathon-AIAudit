@@ -5,7 +5,8 @@ use cosmwasm_std::{
     StdError, StdResult, WasmMsg,
 };
 use manager_license::msg::{
-    ExecuteMsg as ManagerLiscenseExecuteMsg, ValidApiResponse,
+    ExecuteMsg as ManagerLiscenseExecuteMsg, UpdateValidationCertMsg,
+    ValidApiResponse,
 };
 use manager_license::state::{
     ImageClassificationReport, ObjectDetectionReport, Report,
@@ -171,32 +172,20 @@ fn execute_request_validate_api(
 
         let report = match updated_request.request_type {
             RequestType::Image => {
-                let result_reports: StdResult<
-                    Vec<ImageClassificationReport>,
-                > =
-                    updated_request
-                        .contributers
-                        .iter()
-                        .map(
-                            |request| -> StdResult<
-                                ImageClassificationReport,
-                            > {
-                                if let Report::ImageClassification(
-                                    report,
-                                ) = request.report.clone()
-                                {
-                                    Ok(report)
-                                } else {
-                                    Err(StdError::ParseErr {
-                                    target_type:
-                                        "ImageClassificationReport"
-                                            .into(),
-                                    msg: "ParseError".into(),
-                                })
-                                }
-                            },
-                        )
-                        .collect();
+                let result_reports: StdResult<Vec<ImageClassificationReport>> = updated_request
+                    .contributers
+                    .iter()
+                    .map(|request| -> StdResult<ImageClassificationReport> {
+                        if let Report::ImageClassification(report) = request.report.clone() {
+                            Ok(report)
+                        } else {
+                            Err(StdError::ParseErr {
+                                target_type: "ImageClassificationReport".into(),
+                                msg: "ParseError".into(),
+                            })
+                        }
+                    })
+                    .collect();
 
                 let reports = result_reports?;
 
@@ -244,32 +233,20 @@ fn execute_request_validate_api(
                 }
             }
             RequestType::Object => {
-                let result_reports: StdResult<
-                    Vec<ObjectDetectionReport>,
-                > =
-                    updated_request
-                        .contributers
-                        .iter()
-                        .map(
-                            |request| -> StdResult<
-                                ObjectDetectionReport,
-                            > {
-                                if let Report::ObjectDetection(
-                                    report,
-                                ) = request.report.clone()
-                                {
-                                    Ok(report)
-                                } else {
-                                    Err(StdError::ParseErr {
-                                    target_type:
-                                        "ImageClassificationReport"
-                                            .into(),
-                                    msg: "ParseError".into(),
-                                })
-                                }
-                            },
-                        )
-                        .collect();
+                let result_reports: StdResult<Vec<ObjectDetectionReport>> = updated_request
+                    .contributers
+                    .iter()
+                    .map(|request| -> StdResult<ObjectDetectionReport> {
+                        if let Report::ObjectDetection(report) = request.report.clone() {
+                            Ok(report)
+                        } else {
+                            Err(StdError::ParseErr {
+                                target_type: "ImageClassificationReport".into(),
+                                msg: "ParseError".into(),
+                            })
+                        }
+                    })
+                    .collect();
 
                 let reports = result_reports?;
 
@@ -309,12 +286,15 @@ fn execute_request_validate_api(
         };
 
         let execute_msg = to_binary(
-            &ManagerLiscenseExecuteMsg::UpdateValidationCert {
-                verifier: msg.verifier.clone(),
-                id: msg.id.clone(),
-                workers,
-                report,
-            },
+            &ManagerLiscenseExecuteMsg::UpdateValidationCert(
+                UpdateValidationCertMsg {
+                    verifier: msg.verifier.clone(),
+                    id: msg.id.clone(),
+                    workers,
+                    report,
+                    info: msg.info,
+                },
+            ),
         );
 
         let msg = WasmMsg::Execute {

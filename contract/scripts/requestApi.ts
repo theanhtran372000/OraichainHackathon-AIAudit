@@ -2,7 +2,6 @@ import { setUp } from "./setUp";
 import { ManagerLicenseClient } from "../artifacts/contracts/ManagerLicense.client";
 import { AggregatorClient } from "../artifacts/contracts/Aggregator.client";
 import config from "../config";
-// import { coin } from "@cosmjs/proto-signing";
 
 async function updateRegisterHost() {
   // create wallet
@@ -10,32 +9,38 @@ async function updateRegisterHost() {
   const accounts = await wallet.getAccounts();
   const owner = accounts[0].address;
 
-  // // update register
-  // let hosts = accounts.slice(-2);
-  // let updateRegisterRequests = hosts.map((host) => {
-  //   let aggregatorContract = new AggregatorClient(
-  //     client,
-  //     host.address,
-  //     config.contract_aggregator
-  //   );
-  //
-  //   return aggregatorContract.requestValidateApi({
-  //     verifier: "Dino",
-  //     id: "image-model-verify",
-  //     requestType: "image",
-  //     report: {
-  //       image_classification: {
-  //         accuracy: 10000,
-  //         f1_score: 10002,
-  //         precision: 11111,
-  //         recall: 22222,
-  //       },
-  //     },
-  //   });
-  // });
-  //
-  // const responses = await Promise.all(updateRegisterRequests);
-  // console.log(responses);
+  // update register
+  let hosts = accounts.slice(-2);
+  let updateRegisterRequests = hosts.map((host) => {
+    let aggregatorContract = new AggregatorClient(
+      client,
+      host.address,
+      config.contract_aggregator
+    );
+
+    return aggregatorContract.requestValidateApi({
+      verifier: "Dino",
+      id: "image-model-verify",
+      requestType: "image",
+      report: {
+        image_classification: {
+          accuracy: 10000,
+          f1_score: 10002,
+          precision: 11111,
+          recall: 22222,
+        },
+      },
+      info: {
+        api: "api",
+        hearbeat: "hearbeat",
+        task: "task",
+        model_name: "model_name",
+      },
+    });
+  });
+
+  const responses = await Promise.all(updateRegisterRequests);
+  console.log(responses);
 
   // contract
   let managerContract = new ManagerLicenseClient(
@@ -62,13 +67,7 @@ async function updateRegisterHost() {
   ]);
 
   console.log(manager_res.contributers);
-  console.log(
-    res == "none"
-      ? res
-      : "image_classification" in res.response
-      ? res.response.image_classification
-      : res.response.object_detection
-  );
+  console.log(res == "none" ? res : res.response.info);
 }
 updateRegisterHost().catch((err) => {
   console.error(err);

@@ -1,4 +1,4 @@
-use crate::state::Report;
+use crate::state::{Model, ModelInfo, Report};
 use cosmwasm_schema::{cw_serde, QueryResponses};
 use cosmwasm_std::{Addr, Uint128};
 
@@ -19,19 +19,27 @@ pub struct ConfigMsg {
 }
 
 #[cw_serde]
+pub struct UpdateValidationCertMsg {
+    pub verifier: String,
+    pub id: String,
+    pub workers: Vec<String>,
+    pub report: Report,
+    pub info: ModelInfo,
+}
+
+#[cw_serde]
 pub enum ExecuteMsg {
-    UpdateAggregator {
-        aggregator: String,
-    },
-    UpdateValidationCert {
-        verifier: String,
-        id: String,
-        workers: Vec<String>,
-        report: Report,
-    },
+    UpdateAggregator { aggregator: String },
+    UpdateValidationCert(UpdateValidationCertMsg),
     RegisterHost {},
     UpdateConfig(ConfigMsg),
     ClaimReward {},
+}
+
+#[cw_serde]
+pub struct QueryListReport {
+    pub limit: u8,
+    pub verifier: Option<String>,
 }
 
 #[cw_serde]
@@ -39,6 +47,8 @@ pub enum ExecuteMsg {
 pub enum QueryMsg {
     #[returns(ValidApiResponse)]
     ValidApi { verifier: String, id: String },
+    #[returns(ListReportResponse)]
+    ListValidApi(QueryListReport),
     #[returns(InstantiateMsg)]
     Config {},
     #[returns(String)]
@@ -48,7 +58,26 @@ pub enum QueryMsg {
 }
 
 #[cw_serde]
+pub enum ListReportResponse {
+    VerifierList(Vec<VerifierListResponse>),
+    NormalList(Vec<NormalListResponse>),
+}
+
+#[cw_serde]
+pub struct VerifierListResponse {
+    pub id: String,
+    pub model: Model,
+}
+
+#[cw_serde]
+pub struct NormalListResponse {
+    pub verifier: String,
+    pub id: String,
+    pub model: Model,
+}
+
+#[cw_serde]
 pub enum ValidApiResponse {
     None,
-    Response(Report),
+    Response(Model),
 }
