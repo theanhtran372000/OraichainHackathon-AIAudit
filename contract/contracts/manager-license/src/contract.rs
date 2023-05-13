@@ -229,11 +229,6 @@ pub fn query(
     _msg: QueryMsg,
 ) -> StdResult<Binary> {
     match _msg {
-<<<<<<< Updated upstream
-        QueryMsg::ValidApi { verifier, id } => to_binary(
-            &VALID_API.load(_deps.storage, (&verifier, &id))?,
-        ),
-=======
         QueryMsg::ValidApi { verifier, id } => {
             let api = VALID_API
                 .may_load(_deps.storage, (&verifier, &id))?;
@@ -244,7 +239,6 @@ pub fn query(
                 None => to_binary(&ValidApiResponse::None),
             }
         }
->>>>>>> Stashed changes
         QueryMsg::Config {} => {
             to_binary(&CONFIG.load(_deps.storage)?)
         }

@@ -30,12 +30,7 @@ pub fn is_existed_api(
         manager,
         &QueryMsg::ValidApi { verifier, id },
     ) {
-<<<<<<< Updated upstream
-        Ok(_) => Ok(true),
-        Err(_) => Ok(false),
-=======
         Ok(x) => Ok(x),
         Err(e) => return Err(e),
->>>>>>> Stashed changes
     }
 }

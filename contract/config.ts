@@ -21,6 +21,6 @@ if (error) {
 
 export default {
   totalNumber: envVars.TOTAL_HOSTS,
-  contract_manager: envVars.CONTRACT_AGGREGATOR,
+  contract_manager: envVars.CONTRACT_MANAGER,
   contract_aggregator: envVars.CONTRACT_AGGREGATOR,
 };

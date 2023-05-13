@@ -1,17 +1,16 @@
 import { SimulateCosmWasmClient } from "@terran-one/cw-simulate";
 import { resolve } from "path";
 import { InstantiateMsg as ManagerInstantiateMsg } from "../artifacts/contracts/ManagerLicense.types";
-import {
-  InstantiateMsg as AggregatorInstantiateMsg,
-  RequestType,
-} from "../artifacts/contracts/Aggregator.types";
+import { InstantiateMsg as AggregatorInstantiateMsg } from "../artifacts/contracts/Aggregator.types";
 import { AggregatorClient } from "../artifacts/contracts/Aggregator.client";
 import { ManagerLicenseClient } from "../artifacts/contracts/ManagerLicense.client";
+import { coin } from "@cosmjs/proto-signing";
 
 describe("full-flow", () => {
   let managerAddress, aggregatorAddress;
   let ManagerContract: ManagerLicenseClient;
   let AggregatorContract: AggregatorClient;
+  let client: SimulateCosmWasmClient;
 
   const prefix = "orai";
   const chainId = "Oraichain";
@@ -25,7 +24,7 @@ describe("full-flow", () => {
   ];
 
   beforeAll(async () => {
-    const client = new SimulateCosmWasmClient({
+    client = new SimulateCosmWasmClient({
       zkFeatures: true,
       chainId,
       bech32Prefix: prefix,
@@ -77,9 +76,6 @@ describe("full-flow", () => {
     expect(aggregatorAddress).not.toBeNaN();
   });
 
-<<<<<<< Updated upstream
-  it("register host successfully", async () => { });
-=======
   it("register host successfully", async () => {
     let request_register = hosts.map(async (host) => {
       let manager_contract = new ManagerLicenseClient(
@@ -154,5 +150,4 @@ describe("full-flow", () => {
 
     expect(res.status).toEqual("success");
   });
->>>>>>> Stashed changes
 });

@@ -10,8 +10,13 @@ const mnemonic = process.env.MNEMONIC as string;
 const network = cosmosConfig.networks.oraichain_testnet;
 
 export async function setUp() {
+  const totalMember = config.totalNumber;
+  const hdPaths = Array.from({ length: totalMember + 1 }, (_, idx) => idx).map(
+    (idx) => makeCosmoshubPath(idx)
+  );
   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
     prefix: network.prefix,
+    hdPaths,
   });
   const [signer] = await wallet.getAccounts();
 
