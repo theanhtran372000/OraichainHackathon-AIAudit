@@ -1,5 +1,5 @@
+use crate::state::Report;
 use cosmwasm_schema::{cw_serde, QueryResponses};
-
 use cosmwasm_std::{Addr, Uint128};
 
 #[cw_serde]
@@ -27,6 +27,7 @@ pub enum ExecuteMsg {
         verifier: String,
         id: String,
         workers: Vec<String>,
+        report: Report,
     },
     RegisterHost {},
     UpdateConfig(ConfigMsg),
@@ -36,7 +37,7 @@ pub enum ExecuteMsg {
 #[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
-    #[returns(bool)]
+    #[returns(ValidApiResponse)]
     ValidApi { verifier: String, id: String },
     #[returns(InstantiateMsg)]
     Config {},
@@ -44,4 +45,10 @@ pub enum QueryMsg {
     Aggregator {},
     #[returns(Vec<Addr>)]
     Hosts {},
+}
+
+#[cw_serde]
+pub enum ValidApiResponse {
+    None,
+    Response(Report),
 }

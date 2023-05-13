@@ -8,9 +8,12 @@ use cw2::set_contract_version;
 // use cw2::set_contract_version;
 
 use crate::error::ContractError;
-use crate::msg::{ConfigMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
+use crate::msg::{
+    ConfigMsg, ExecuteMsg, InstantiateMsg, QueryMsg, ValidApiResponse,
+};
 use crate::state::{
-    Config, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS, VALID_API,
+    Config, Report, AGGREGATOR, CONFIG, REGISTERED_HOSTS, REWARDS,
+    VALID_API,
 };
 
 // version info for migration info
@@ -57,8 +60,9 @@ pub fn execute(
             verifier,
             id,
             workers,
+            report,
         } => execute_update_validation_api(
-            _deps, _info, verifier, id, workers,
+            _deps, _info, verifier, id, workers, report,
         ),
         ExecuteMsg::RegisterHost {} => {
             execute_register_host(_deps, _info)
@@ -96,6 +100,7 @@ pub fn execute_update_validation_api(
     verifier: String,
     id: String,
     workers: Vec<String>,
+    report: Report,
 ) -> Result<Response, ContractError> {
     if _info.sender != AGGREGATOR.load(_deps.storage)? {
         return Err(ContractError::Unauthorized {});
@@ -123,7 +128,7 @@ pub fn execute_update_validation_api(
         )?;
     }
 
-    VALID_API.save(_deps.storage, (&verifier, &id), &true)?;
+    VALID_API.save(_deps.storage, (&verifier, &id), &report)?;
 
     Ok(Response::new()
         .add_attribute("action", "update_validation_api")
@@ -228,8 +233,11 @@ pub fn query(
             let api = VALID_API
                 .may_load(_deps.storage, (&verifier, &id))?;
             match api {
-                Some(_) => to_binary(&true),
-                None => to_binary(&false),
+                Some(api) => {
+                    to_binary(&ValidApiResponse::Response(api))
+                }
+                None => to_binary(&ValidApiResponse::None),
+
             }
         }
         QueryMsg::Config {} => {

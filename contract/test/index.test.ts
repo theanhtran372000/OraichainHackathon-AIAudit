@@ -115,6 +115,16 @@ describe("full-flow", () => {
       return aggregatorContract.requestValidateApi({
         verifier: "Dino",
         id: "image-model-verify",
+        requestType: "image",
+        report: {
+          image_classification: {
+            accuracy: 10000,
+            f1_score: 10002,
+            precision: 11111,
+            recall: 22222,
+          },
+        },
+
       });
     });
 
@@ -135,7 +145,14 @@ describe("full-flow", () => {
       id: "image-model-verify",
     });
 
-    console.log(res.status);
+    let manager_res = await ManagerContract.validApi({
+      verifier: "Dino",
+      id: "image-model-verify",
+    });
+
+    console.log(res);
+    console.log(manager_res);
+
 
     expect(res.status).toEqual("success");
   });
