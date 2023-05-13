@@ -3,6 +3,7 @@ import AppLayout from "./components/AppLayout/AppLayout";
 
 import LandingPage from "./components/LandingPage";
 import UserPage from "./components/UserPage";
+// import "./App.css";
 
 const App = () => {
   return (
