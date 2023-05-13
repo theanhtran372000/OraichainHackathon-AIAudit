@@ -224,9 +224,14 @@ pub fn query(
     _msg: QueryMsg,
 ) -> StdResult<Binary> {
     match _msg {
-        QueryMsg::ValidApi { verifier, id } => to_binary(
-            &VALID_API.load(_deps.storage, (&verifier, &id))?,
-        ),
+        QueryMsg::ValidApi { verifier, id } => {
+            let api = VALID_API
+                .may_load(_deps.storage, (&verifier, &id))?;
+            match api {
+                Some(_) => to_binary(&true),
+                None => to_binary(&false),
+            }
+        }
         QueryMsg::Config {} => {
             to_binary(&CONFIG.load(_deps.storage)?)
         }

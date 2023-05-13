@@ -30,7 +30,7 @@ pub fn is_existed_api(
         manager,
         &QueryMsg::ValidApi { verifier, id },
     ) {
-        Ok(_) => Ok(true),
+        Ok(x) => Ok(x),
         Err(_) => Ok(false),
     }
 }
