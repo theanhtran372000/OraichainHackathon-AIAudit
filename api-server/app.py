@@ -46,7 +46,7 @@ def mobilenetv2_image_classification():
         
     image = request.files['image']
     ext = image.filename.split('.')[-1]
-    if ext not in configs['mobilenetv2']['exts']:
+    if ext.lower() not in configs['mobilenetv2']['exts']:
         return format_response(
             'error',
             '{} not supported!'.format(ext),
@@ -91,7 +91,7 @@ def yunet_face_detection():
         
     image = request.files['image']
     ext = image.filename.split('.')[-1]
-    if ext not in configs['yunet']['exts']:
+    if ext.lower() not in configs['yunet']['exts']:
         return format_response(
             'error',
             '{} not supported!'.format(ext),
