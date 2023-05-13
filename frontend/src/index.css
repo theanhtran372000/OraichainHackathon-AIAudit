@@ -26,10 +26,10 @@
 }
 
 html {
-  font: ;
-  color: var(--theme-color-2);
+  font: var(--font-normal);
+  color: var(--text-color);
   overflow-x: hidden;
-  background-color: var(--background-main-color);
+  background-color: var(--background-color);
   scroll-behavior: smooth;
 }
 
