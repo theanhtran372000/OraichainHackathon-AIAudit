@@ -6,7 +6,7 @@ const cx = classNames.bind(style);
 export const TutorialSection = () => {
   return (
     <section className={cx("container", "ranking-section")}>
-      <p className={cx("title")}>How it works?</p>
+      <p className={cx("title")} id="tutorial">How it works?</p>
 
       <div className={cx("certs")}>
         <div className={cx("cert")}>
