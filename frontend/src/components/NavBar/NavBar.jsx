@@ -4,7 +4,7 @@ import style from "./NavBar.module.sass";
 const cx = classNames.bind(style);
 
 const NavBar = () => {
-  return <div className={cx("header", "navbar")}>NavBar</div>;
+  return <section className="container">Hello</section>;
 };
 
 export default NavBar;
