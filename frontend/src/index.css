@@ -1,3 +1,4 @@
+/* DEFAULT CONFIG */
 :root {
   --font-normal:  18px normal 'Outfit', sans-serif;
   --font-heading-1: 72px 600 'Outfit', san-serif;
@@ -48,4 +49,15 @@ section {
 
 .container {
   width: 1065px;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  background-image: url(./assets/main_bg.png);
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
 }
