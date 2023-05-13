@@ -3,6 +3,7 @@ import AppLayout from "./components/AppLayout/AppLayout";
 
 import LandingPage from "./components/LandingPage";
 import UserPage from "./components/UserPage";
+import CertificationPage from "./components/CertificationPage";
 // import "./App.css";
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/certification" element={<CertificationPage />} />
       </Routes>
     </AppLayout>
   );
