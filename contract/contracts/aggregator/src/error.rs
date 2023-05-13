@@ -15,4 +15,7 @@ pub enum ContractError {
 
     #[error("Request has been expired at {0}")]
     Expired(u64),
+
+    #[error("Wrong report type")]
+    WrongReportType {},
 }

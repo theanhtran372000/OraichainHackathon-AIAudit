@@ -1,6 +1,7 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::Addr;
 use cw_storage_plus::{Item, Map};
+use manager_license::state::Report;
 
 #[cw_serde]
 pub enum ValidateAPIStatus {
@@ -11,8 +12,21 @@ pub enum ValidateAPIStatus {
 }
 
 #[cw_serde]
+pub enum RequestType {
+    Image = 1,
+    Object,
+}
+
+#[cw_serde]
+pub struct ContributeRequest {
+    pub address: Addr,
+    pub report: Report,
+}
+
+#[cw_serde]
 pub struct ValidateAPIRequest {
-    pub contributers: Vec<Addr>,
+    pub request_type: RequestType,
+    pub contributers: Vec<ContributeRequest>,
     pub deadline: u64,
 }
 

@@ -1,7 +1,10 @@
 import { SimulateCosmWasmClient } from "@terran-one/cw-simulate";
 import { resolve } from "path";
 import { InstantiateMsg as ManagerInstantiateMsg } from "../artifacts/contracts/ManagerLicense.types";
-import { InstantiateMsg as AggregatorInstantiateMsg } from "../artifacts/contracts/Aggregator.types";
+import {
+  InstantiateMsg as AggregatorInstantiateMsg,
+  RequestType,
+} from "../artifacts/contracts/Aggregator.types";
 import { AggregatorClient } from "../artifacts/contracts/Aggregator.client";
 import { ManagerLicenseClient } from "../artifacts/contracts/ManagerLicense.client";
 
@@ -74,5 +77,82 @@ describe("full-flow", () => {
     expect(aggregatorAddress).not.toBeNaN();
   });
 
+<<<<<<< Updated upstream
   it("register host successfully", async () => { });
+=======
+  it("register host successfully", async () => {
+    let request_register = hosts.map(async (host) => {
+      let manager_contract = new ManagerLicenseClient(
+        client,
+        host,
+        managerAddress
+      );
+
+      let config = await manager_contract.config();
+
+      return manager_contract.registerHost("auto", undefined, [
+        coin(config.register_fee, "orai"),
+      ]);
+    });
+
+    const responses = await Promise.all(request_register);
+
+    responses.forEach((response) => {
+      expect(response.events[1].attributes[1].value).toEqual("register_host");
+    });
+  });
+
+  it("succesfully send update api", async () => {
+    const miniumHost = hosts.slice(-2);
+
+    const updateRequest = miniumHost.map(async (host) => {
+      let aggregatorContract = new AggregatorClient(
+        client,
+        host,
+        aggregatorAddress
+      );
+
+      return aggregatorContract.requestValidateApi({
+        verifier: "Dino",
+        id: "image-model-verify",
+        requestType: "image",
+        report: {
+          image_classification: {
+            accuracy: 10000,
+            f1_score: 10002,
+            precision: 11111,
+            recall: 22222,
+          },
+        },
+      });
+    });
+
+    let responses = await Promise.all(updateRequest);
+
+    responses.forEach((res) => {
+      expect(res.events[1].attributes[1].value).toEqual("request_validate_api");
+    });
+
+    let aggregatorContract = new AggregatorClient(
+      client,
+      hosts[0],
+      aggregatorAddress
+    );
+
+    let res = await aggregatorContract.request({
+      verifier: "Dino",
+      id: "image-model-verify",
+    });
+
+    let manager_res = await ManagerContract.validApi({
+      verifier: "Dino",
+      id: "image-model-verify",
+    });
+
+    console.log(res);
+    console.log(manager_res);
+
+    expect(res.status).toEqual("success");
+  });
+>>>>>>> Stashed changes
 });

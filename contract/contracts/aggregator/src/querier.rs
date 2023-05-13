@@ -1,6 +1,6 @@
 use cosmwasm_std::{Addr, Deps, StdResult};
 use manager_license::msg::{
-    InstantiateMsg as ConfigResponse, QueryMsg,
+    InstantiateMsg as ConfigResponse, QueryMsg, ValidApiResponse,
 };
 
 use crate::state::MAGANAGER;
@@ -23,14 +23,19 @@ pub fn is_existed_api(
     deps: Deps,
     verifier: String,
     id: String,
-) -> StdResult<bool> {
+) -> StdResult<ValidApiResponse> {
     let manager = MAGANAGER.load(deps.storage)?;
 
-    match deps.querier.query_wasm_smart::<bool>(
+    match deps.querier.query_wasm_smart::<ValidApiResponse>(
         manager,
         &QueryMsg::ValidApi { verifier, id },
     ) {
+<<<<<<< Updated upstream
         Ok(_) => Ok(true),
         Err(_) => Ok(false),
+=======
+        Ok(x) => Ok(x),
+        Err(e) => return Err(e),
+>>>>>>> Stashed changes
     }
 }
