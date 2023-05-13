@@ -7,7 +7,7 @@ import { ManagerLicenseClient } from "../artifacts/contracts/ManagerLicense.clie
 import { coin } from "@cosmjs/proto-signing";
 
 describe("full-flow", () => {
-  let managerAddress, aggregatorAddress;
+  let managerAddress: string, aggregatorAddress: string;
   let ManagerContract: ManagerLicenseClient;
   let AggregatorContract: AggregatorClient;
   let client: SimulateCosmWasmClient;
@@ -28,6 +28,10 @@ describe("full-flow", () => {
       zkFeatures: true,
       chainId,
       bech32Prefix: prefix,
+    });
+
+    hosts.forEach((host) => {
+      client.app.bank.setBalance(host, [coin("100000000", "orai")]);
     });
 
     // import the wasm bytecode
@@ -120,6 +124,7 @@ describe("full-flow", () => {
             recall: 22222,
           },
         },
+
       });
     });
 
@@ -147,6 +152,7 @@ describe("full-flow", () => {
 
     console.log(res);
     console.log(manager_res);
+
 
     expect(res.status).toEqual("success");
   });

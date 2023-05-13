@@ -378,7 +378,7 @@ fn query_request_status(
                 return Ok(ValidateAPIStatus::Expired(api.deadline));
             }
             let for_votes = api.contributers.len();
-            let percentage = for_votes / num_host;
+            let percentage = for_votes * 100 / num_host;
             if percentage >= config.thresh_hold_for as usize {
                 return Ok(ValidateAPIStatus::Success);
             }

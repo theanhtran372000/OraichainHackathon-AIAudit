@@ -237,6 +237,7 @@ pub fn query(
                     to_binary(&ValidApiResponse::Response(api))
                 }
                 None => to_binary(&ValidApiResponse::None),
+
             }
         }
         QueryMsg::Config {} => {

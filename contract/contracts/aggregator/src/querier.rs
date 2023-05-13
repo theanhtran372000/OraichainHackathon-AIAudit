@@ -32,5 +32,6 @@ pub fn is_existed_api(
     ) {
         Ok(x) => Ok(x),
         Err(e) => return Err(e),
+
     }
 }
