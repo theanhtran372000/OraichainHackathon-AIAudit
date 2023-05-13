@@ -1,0 +1,10 @@
+.ant-select {
+  border-bottom: 2px solid white !important;
+}
+.ant-select-selection-item {
+    bottom: 5px;
+    color: white;
+}
+.ant-select-arrow svg {
+  color: white;
+}

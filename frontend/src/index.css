@@ -57,3 +57,6 @@ section {
   background-position: top center;
   background-size: cover;
 }
+::-webkit-scrollbar {
+  display: none;
+}
