@@ -25,7 +25,7 @@ const NavBar = () => {
         {/* Navigation */}
         <div className={cx("navbar")}>
           <div className={cx("nav")} style={{ marginRight: 30 }}>
-            <a href="#latest">Latest</a>
+            <a href="/#latest">Latest</a>
           </div>
           {/* <div className={cx("nav")}>Leaderboard</div> */}
           <div className={cx("nav")}>
