@@ -8,7 +8,9 @@ const cx = classNames.bind(style);
 export const LatestSection = () => {
   return (
     <section className={cx("container", "latest-section")}>
-      <p className={cx("title")}>Latest certification</p>
+      <p className={cx("title")} id="latest">
+        Latest certification
+      </p>
 
       <div className={cx("certs")}>
         <div className={cx("cert")}>

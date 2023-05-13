@@ -2,48 +2,55 @@ import { Row, Col, Select } from "antd";
 import classNames from "classnames/bind";
 import style from "./Certificates.module.sass";
 const cx = classNames.bind(style);
+import { Link } from "react-router-dom";
+import SearchBox from "../SearchBox";
 import "./Certificates.css";
 
 const Certificate = ({ cert }) => {
   const { api, dataset, time, model, status } = cert;
 
   return (
-    <Row className={cx("card")} style={{ rowGap: "20px" }}>
-      <Col span={5}>
-        <div className={cx("label")}>API</div>
-      </Col>
-      <Col span={19}>
-        <div className={cx("info")}>{api}</div>
-      </Col>
+    <Link
+      to={{ pathname: "/certification/", state: cert }}
+      className={cx("link")}
+    >
+      <Row className={cx("card")} style={{ rowGap: "20px" }}>
+        <Col span={5}>
+          <div className={cx("label")}>API</div>
+        </Col>
+        <Col span={19}>
+          <div className={cx("info")}>{api}</div>
+        </Col>
 
-      <Col span={5}>
-        <div className={cx("label")}>Dataset</div>
-      </Col>
-      <Col span={7}>
-        <div className={cx("info")}>{dataset}</div>
-      </Col>
-      <Col span={5}>
-        <div className={cx("label")}>Issued time</div>
-      </Col>
-      <Col span={7}>
-        <div className={cx("info")}>{time}</div>
-      </Col>
+        <Col span={5}>
+          <div className={cx("label")}>Dataset</div>
+        </Col>
+        <Col span={7}>
+          <div className={cx("info")}>{dataset}</div>
+        </Col>
+        <Col span={5}>
+          <div className={cx("label")}>Issued time</div>
+        </Col>
+        <Col span={7}>
+          <div className={cx("info")}>{time}</div>
+        </Col>
 
-      <Col span={5}>
-        <div className={cx("label")}>Model</div>
-      </Col>
-      <Col span={7}>
-        <div className={cx("info")}>{model}</div>
-      </Col>
-      <Col span={5}>
-        <div className={cx("label")}>Status</div>
-      </Col>
-      <Col span={7}>
-        <div className={cx("info", status == "Success" ? "success" : "")}>
-          {status}
-        </div>
-      </Col>
-    </Row>
+        <Col span={5}>
+          <div className={cx("label")}>Model</div>
+        </Col>
+        <Col span={7}>
+          <div className={cx("info")}>{model}</div>
+        </Col>
+        <Col span={5}>
+          <div className={cx("label")}>Status</div>
+        </Col>
+        <Col span={7}>
+          <div className={cx("info", status == "Success" ? "success" : "")}>
+            {status}
+          </div>
+        </Col>
+      </Row>
+    </Link>
   );
 };
 const Dataset = (props) => {
@@ -132,24 +139,25 @@ const Form = () => {
         </Col>
       </Row>
 
-      <div
-        style={{
-          marginTop: 25,
-          height: 200,
-          borderBottom: "2px solid #ccc",
-          borderTop: "2px solid #ccc",
-          overflowY: "scroll",
-          // boxShadow: '5px 5px 5px #fff inset'
-        }}
-      >
+      <div className={cx("scrollable")}>
         <Dataset dataset={dataset} />
         <Dataset dataset={dataset} />
         <Dataset dataset={dataset} />
       </div>
-
+      
       <Row className={cx("btn-add-data")}>
-        <button>Add dataset</button>
+        <label htmlFor="filepicker">Add dataset</label>
       </Row>
+
+      <input
+        type="file"
+        id="filepicker"
+        name="fileList"
+        multiple
+        // directory=""
+        webkitdirectory=""
+        hidden
+      />
 
       <div className={cx("dataset-name")} style={{ marginTop: 40 }}>
         Fee calculation
@@ -193,7 +201,7 @@ const Certificates = () => {
             style={{ justifyContent: "space-between", alignItems: "center" }}
           >
             <div className={cx("title")}>Your certificates</div>
-            <div>searchbox</div>
+            <SearchBox />
           </Row>
         </Col>
 

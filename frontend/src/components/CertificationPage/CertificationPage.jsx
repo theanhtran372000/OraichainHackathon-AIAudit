@@ -23,7 +23,7 @@ const RenderList = ({ data }) => {
     </Row>
   );
 };
-const CertificationPage = () => {
+const CertificationPage = (props) => {
   const metrics = {
     acc: 100,
     f1: 90,
@@ -39,8 +39,8 @@ const CertificationPage = () => {
   };
 
   const model = {
-    // name: 
-  }
+    // name:
+  };
 
   return (
     <>
