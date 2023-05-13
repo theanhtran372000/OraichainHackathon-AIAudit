@@ -15,11 +15,12 @@ import { CONTRACT_MANAGER } from "../../config/constants";
 let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
 const Certificate = ({ cert }) => {
-  const { api, task, hearbeat, model_name, status } = cert;
+  const { api, task, hearbeat, model_name, id } = cert;
 
   return (
     <Link
-      to={{ pathname: "/certification/", state: cert }}
+      to={{ pathname: `/certification/${id}` }}
+      state={cert}
       className={cx("link")}
     >
       <Row className={cx("card")} style={{ rowGap: "20px" }}>
@@ -202,7 +203,6 @@ const Certificates = () => {
           verifier: address,
         },
       });
-      console.log(res);
       setCerts(res.verifier_list);
     };
     fetchCert().catch((err) => console.error(err));
@@ -229,7 +229,15 @@ const Certificates = () => {
       <Row style={{ width: "100%" }}>
         <Col span={16} className={cx("big-column")}>
           {certs.map((cert) => {
-            return <Certificate cert={cert.model.info} />;
+            return (
+              <Certificate
+                cert={{
+                  ...cert.model.info,
+                  report: cert.model.report,
+                  id: cert.id,
+                }}
+              />
+            );
           })}
         </Col>
 

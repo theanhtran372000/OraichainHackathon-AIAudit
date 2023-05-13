@@ -2,6 +2,7 @@ import Profile from "../Profile";
 import classNames from "classnames/bind";
 import style from "./CertificationPage.module.sass";
 import { Row, Col } from "antd";
+import { useLocation } from "react-router-dom";
 
 const cx = classNames.bind(style);
 
@@ -23,24 +24,11 @@ const RenderList = ({ data }) => {
     </Row>
   );
 };
-const CertificationPage = (props) => {
-  const metrics = {
-    acc: 100,
-    f1: 90,
-    precision: 100,
-    recall: 90,
-    map: 90,
-    mse: 65,
-    mae: 88,
-    auc: 921,
-    roc: 123,
-    iou: 1212,
-    sa: 12,
-  };
+const CertificationPage = () => {
+  const location = useLocation();
+  const { api, task, hearbeat, model_name, report } = location.state;
 
-  const model = {
-    // name:
-  };
+  console.log(location.state);
 
   return (
     <>
@@ -53,17 +41,23 @@ const CertificationPage = (props) => {
             <Row className={cx("card-title")} style={{ marginTop: 0 }}>
               Model
             </Row>
-            <RenderList data={metrics} />
+            <RenderList data={{ model_name, task }} />
 
             <Row className={cx("metrics")}>Metrics</Row>
-            <RenderList data={metrics} />
+            <RenderList
+              data={
+                report.image_classification
+                  ? report.image_classification
+                  : report.object_classification
+              }
+            />
             <hr />
             <Row className={cx("card-title")}>API</Row>
-            <RenderList data={metrics} />
+            <RenderList data={{ api, hearbeat }} />
             <hr />
 
             <Row className={cx("card-title")}>Dataset</Row>
-            <RenderList data={metrics} />
+            <RenderList data={{ api, task }} />
           </div>
         </div>
       </section>
