@@ -7,7 +7,7 @@ const cx = classNames.bind(style);
 
 const NavBar = () => {
   return (
-    <section className={cx("container", "sb")}>
+    <section className={cx("container", "navbar-section")}>
       {/* Logo */}
       <div className={cx("logo")}>
         <img className={cx("logo-image")} src={logo} alt="AI Audit logo" />
