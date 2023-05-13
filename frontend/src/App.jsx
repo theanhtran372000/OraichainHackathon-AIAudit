@@ -1,12 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout/AppLayout";
-// import NavBar from "./components/NavBar/NavBar";
+
+import LandingPage from "./components/LandingPage";
 
 const App = () => {
   return (
     <AppLayout>
       <Routes>
-        <Route path="/" />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
     </AppLayout>
   );
