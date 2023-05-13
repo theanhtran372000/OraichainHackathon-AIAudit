@@ -1,11 +1,7 @@
 /* DEFAULT CONFIG */
 :root {
-  --font-normal:  18px normal 'Outfit', sans-serif;
-  --font-heading-1: 72px 600 'Outfit', san-serif;
-  --font-big-button: 32px uppercase 'Outfit',
+  --font-family: 'Outfit',
     sans-serif;
-  --font-title: 32px 600 'Outfit',
-    san-serif;
   --background-color: #2B2B2B;
   --background-color-2: #3B3B3B;
   --label-text-color: #858584;
@@ -26,7 +22,7 @@
 }
 
 html {
-  font: var(--font-normal);
+  font-family: var(--font-family);
   color: var(--text-color);
   overflow-x: hidden;
   background-color: var(--background-color);
@@ -56,7 +52,7 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: start;
-  background-image: url(./assets/main_bg.png);
+  background-image: url(./assets/main_bg_small.png);
   background-repeat: no-repeat;
   background-position: top center;
   background-size: cover;
