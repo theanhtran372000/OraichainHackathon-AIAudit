@@ -2,16 +2,16 @@ import classNames from "classnames/bind";
 import style from "./LatestSection.module.sass";
 import { Link } from "react-router-dom";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import avatar from "../../../../assets/avatar1_small.jpg";
 import { useState, useEffect } from "react";
 import { CONTRACT_MANAGER } from "../../../../config/constants";
 import config from "../../../../config/cosmjs.config";
-// import avatar2 from "../../../../assets/avatar2_small.jpg";
-// import avatar3 from "../../../../assets/avatar3_small.jpg";
-// import avatar4 from "../../../../assets/avatar4_small.jpg";
-// import avatar5 from "../../../../assets/avatar5_small.jpg";
-// import avatar6 from "../../../../assets/avatar6_small.jpg";
-// import avatar7 from "../../../../assets/avatar7_small.jpg";
+import avatar1 from "../../../../assets/avatar1_small.jpg";
+import avatar2 from "../../../../assets/avatar2_small.jpg";
+import avatar3 from "../../../../assets/avatar3_small.jpg";
+import avatar4 from "../../../../assets/avatar4_small.jpg";
+import avatar5 from "../../../../assets/avatar5_small.jpg";
+import avatar6 from "../../../../assets/avatar6_small.jpg";
+import avatar7 from "../../../../assets/avatar7_small.jpg";
 
 const cx = classNames.bind(style);
 
@@ -74,29 +74,31 @@ export const LatestSection = () => {
       <div className={cx("certs")}>
         {validApi.length > -1
           ? validApi.map((api) => {
-            let key_val_array = Object.entries(api.model.info);
-            return (
-              <div key={api.id} className={cx("cert")}>
-                <div className={cx("avatar-container")}>
-                  <img className={cx("avatar")} src={avatar} alt="" />
-                </div>
-                <p className={cx("username")}>{`${api.verifier.slice(
-                  0,
-                  5
-                )}...${api.verifier.slice(-5)}`}</p>
-                <div className={cx("infos")}>
-                  {key_val_array.map(([k, v]) => {
-                    return (
-                      <div key={k} className={cx("info")}>
-                        <p>{k}</p>
-                        <p>{v}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })
+              let key_val_array = Object.entries(api.model.info);
+
+              return (
+                <Link to="/certification" key={api.id} className={cx("cert")}>
+                  <div className={cx("avatar-container")}>
+                    <img className={cx("avatar")} src={avatar1} alt="" />
+                  </div>
+
+                  <p className={cx("username")}>
+                    {`${api.verifier.slice(0, 5)}...${api.verifier.slice(-5)}`}
+                  </p>
+
+                  <div className={cx("infos")}>
+                    {key_val_array.map(([k, v]) => {
+                      return (
+                        <div key={k} className={cx("info")}>
+                          <p>{k}</p>
+                          <p>{v}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Link>
+              );
+            })
           : "NotFound"}
       </div>
     </section>
