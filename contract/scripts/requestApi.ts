@@ -19,8 +19,8 @@ async function updateRegisterHost() {
     );
 
     return aggregatorContract.requestValidateApi({
-      verifier: owner,
-      id: "image-model-verify-2",
+      verifier: "orai1yf0rc99g8v5laxwfr0ljx857l7w7p5gcrawutr",
+      id: "image-model-verify-3",
       requestType: "image",
       report: {
         image_classification: {
@@ -31,10 +31,10 @@ async function updateRegisterHost() {
         },
       },
       info: {
-        api: "api",
+        api: "https://github.com/theanhtran372000/OraichainHackathon-AIAudit/tree/contract",
         hearbeat: "hearbeat",
         task: "task",
-        model_name: "model_name",
+        model_name: "nguyen",
       },
     });
   });

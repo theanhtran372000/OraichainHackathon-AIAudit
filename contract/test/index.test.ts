@@ -159,6 +159,12 @@ describe("full-flow", () => {
       limit: 10,
     });
 
+    let list_request = await AggregatorContract.listRequest({
+      limit: 10,
+    });
+
+    console.log(list_request);
+
     // @ts-ignore
     console.log(list_validate.normal_list[0].model);
 

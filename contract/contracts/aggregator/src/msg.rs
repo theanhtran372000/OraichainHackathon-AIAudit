@@ -26,10 +26,43 @@ pub enum ExecuteMsg {
 }
 
 #[cw_serde]
+pub struct ListRequestQuery {
+    pub verifier: Option<String>,
+    pub limit: u8,
+}
+
+#[cw_serde]
 #[derive(QueryResponses)]
 pub enum QueryMsg {
     #[returns(RequestResponse)]
     Request { verifier: String, id: String },
+    #[returns(ListRequestResponse)]
+    ListRequest(ListRequestQuery),
+}
+
+#[cw_serde]
+pub enum ListRequestResponse {
+    Verifier(Vec<VerifierListResponse>),
+    Normal(Vec<NormalListResponse>),
+}
+
+#[cw_serde]
+pub struct VerifierListResponse {
+    pub status: ValidateAPIStatus,
+    pub id: String,
+    pub info: ModelInfo,
+    pub contributers: Vec<ContributeRequest>,
+    pub deadline: u64,
+}
+
+#[cw_serde]
+pub struct NormalListResponse {
+    pub status: ValidateAPIStatus,
+    pub verifier: String,
+    pub id: String,
+    pub info: ModelInfo,
+    pub contributers: Vec<ContributeRequest>,
+    pub deadline: u64,
 }
 
 #[cw_serde]

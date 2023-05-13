@@ -16,8 +16,9 @@ use manager_license::state::{
 use crate::error::ContractError;
 
 use crate::msg::{
-    ExecuteMsg, InstantiateMsg, QueryMsg, RequestResponse,
-    RequestValidateMsg,
+    ExecuteMsg, InstantiateMsg, ListRequestQuery,
+    ListRequestResponse, NormalListResponse, QueryMsg,
+    RequestResponse, RequestValidateMsg, VerifierListResponse,
 };
 use crate::state::{
     ContributeRequest, RequestType, ValidateAPIRequest,
@@ -125,6 +126,7 @@ fn execute_request_validate_api(
         }
         ValidateAPIStatus::NotExisted => {
             let new_request = ValidateAPIRequest {
+                info: msg.info.clone(),
                 request_type: msg.request_type,
                 contributers: [ContributeRequest {
                     address: _info.sender.clone(),
@@ -322,6 +324,9 @@ pub fn query(
         QueryMsg::Request { verifier, id } => {
             to_binary(&query_request(_deps, _env, &verifier, &id)?)
         }
+        QueryMsg::ListRequest(list_query) => {
+            to_binary(&query_list_request(_deps, _env, list_query)?)
+        }
     }
 }
 
@@ -338,6 +343,75 @@ fn query_request(
         contributers: request.contributers,
         deadline: request.deadline,
     })
+}
+
+fn query_list_request(
+    _deps: Deps,
+    _env: Env,
+    list_query: ListRequestQuery,
+) -> StdResult<ListRequestResponse> {
+    match list_query.verifier {
+        Some(verifier) => {
+            let raw_list: StdResult<Vec<_>> = REQUESTS
+                .prefix(&verifier)
+                .range(
+                    _deps.storage,
+                    None,
+                    None,
+                    cosmwasm_std::Order::Ascending,
+                )
+                .take(list_query.limit as usize)
+                .collect();
+            Ok(ListRequestResponse::Verifier(
+                raw_list?
+                    .iter()
+                    .map(|res| VerifierListResponse {
+                        status: query_request_status(
+                            _deps.clone(),
+                            _env.clone(),
+                            &verifier,
+                            &res.0,
+                        )
+                        .unwrap(),
+                        id: res.0.clone(),
+                        info: res.1.info.clone(),
+                        contributers: res.1.contributers.clone(),
+                        deadline: res.1.deadline,
+                    })
+                    .collect(),
+            ))
+        }
+        None => {
+            let raw_list: StdResult<Vec<_>> = REQUESTS
+                .range(
+                    _deps.storage,
+                    None,
+                    None,
+                    cosmwasm_std::Order::Ascending,
+                )
+                .take(list_query.limit as usize)
+                .collect();
+            Ok(ListRequestResponse::Normal(
+                raw_list?
+                    .iter()
+                    .map(|res| NormalListResponse {
+                        status: query_request_status(
+                            _deps.clone(),
+                            _env.clone(),
+                            &res.0 .0,
+                            &res.0 .1,
+                        )
+                        .unwrap(),
+                        verifier: res.0 .0.clone(),
+                        id: res.0 .1.clone(),
+                        info: res.1.info.clone(),
+                        contributers: res.1.contributers.clone(),
+                        deadline: res.1.deadline,
+                    })
+                    .collect(),
+            ))
+        }
+    }
 }
 
 fn query_request_status(
