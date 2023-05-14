@@ -3,7 +3,18 @@ app:
   port: 9000
   threaded: True
 
+data:
+  host: localhost
+  port: 7000
+
 dataset:
   dir: datasets/tiny_imagenet
   batch_size: 1
   shuffle: True
+
+forward:
+  host: localhost
+  port: 8080
+  exp: 9
+
+save: save
