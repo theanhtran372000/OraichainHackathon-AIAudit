@@ -1,0 +1,6 @@
+Flask
+PyYAML
+torch
+sklearn
+pillow
+requests
