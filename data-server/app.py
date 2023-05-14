@@ -6,6 +6,7 @@ import argparse
 from datetime import datetime
 from loguru import logger
 from pathlib import Path
+from flask_cors import CORS, cross_origin
 from flask import Flask, request, send_file
 from zipfile import ZipFile
 
@@ -20,6 +21,8 @@ def get_parser():
   return parser
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route('/upload-dataset', methods=['POST'])
 def upload_dataset():
