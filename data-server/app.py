@@ -30,6 +30,9 @@ def upload_dataset():
   
   # Get request info
   data = request.form
+  
+  print((data))
+
   if 'user' not in data \
     or 'dataset' not in data \
     or 'task' not in data \
