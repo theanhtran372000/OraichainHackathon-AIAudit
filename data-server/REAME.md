@@ -7,7 +7,12 @@ This is source code for data server of AI Audit project.
 pip install -r requirements.txt
 ```
 
-## 2. APIs
+## 2. Run
+```
+bash scripts/run.sh
+```
+
+## 3. APIs
 - Upload dataset
 - Get dataset list
 - Get an image
