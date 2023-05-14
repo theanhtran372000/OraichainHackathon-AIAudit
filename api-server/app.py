@@ -9,6 +9,7 @@ import uuid
 import argparse
 from pathlib import Path
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 
 import cv2
 import numpy as np
@@ -30,6 +31,10 @@ def get_parser():
     
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
 
 @app.route('/mobilenetv2-image-classification', methods=['POST'])
 def mobilenetv2_image_classification():

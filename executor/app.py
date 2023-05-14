@@ -1,8 +1,13 @@
+import os
 import yaml
+import time
+import requests
 import argparse
 from flask import Flask, request
-from data import create_dataloader, TinyImagenet
+from flask_cors import CORS, cross_origin
+from data import create_dataloader, TinyImagenet, ServerDataset
 from service import ic
+from utils.format import format_response
 
 
 def get_parser():
@@ -12,21 +17,31 @@ def get_parser():
 
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 # API
 @app.route('/audit', methods=['POST'])
 def audit():
+  start = time.time()
   
   # Get task type
   api = request.form['api']
+  address = request.form['address']
+  model_name = request.form['model_name']
   task = request.form['task']
-  
-  # Recieve Eueno data
-  # TODO: ....
-  # Fake dataset
+  dataset_name = request.form['dataset_name']
   
   # Create data generator
+  
+  dataset = ServerDataset(
+    str(address),
+    task,
+    dataset_name,
+    configs
+  )
+  
   dataloader = create_dataloader(
     dataset,
     configs['dataset']['batch_size'],
@@ -36,8 +51,40 @@ def audit():
   report = ic.calculate_metrics(api, dataloader)
   
   # TODO: Send report to Aggregator
+  response = requests.post(
+    'http://{}:{}/api/contract'.format(
+      configs['forward']['host'],
+      configs['forward']['port']
+    ),
+    data={
+      "verifier": address,
+      "id": model_name,
+      "request_type": "image",
+      "report": {
+        "image_classification": {
+          "accuracy": int(report['accuracy'] * 10 ** configs['forward']['exp']),
+          "f1_score": int(report['f1'] * 10 ** configs['forward']['exp']),
+          "precision": int(report['precision'] * 10 ** configs['forward']['exp']),
+          "recall": int(report['recall'] * 10 ** configs['forward']['exp'])
+        }
+      },
+      "info": {
+        "api": api,
+        "hearbeat": "hearbeat",
+        "task": task,
+        "model_name": model_name
+      }
+    }
+  )
   
-  return report
+  print('Response: ', str(response.content))
+  
+  return format_response(
+    'success',
+    'Operation success!',
+    None,
+    time.time() - start
+  )
   
   
 if __name__ == '__main__':
@@ -49,8 +96,7 @@ if __name__ == '__main__':
   with open(args.config, 'r') as f:
     configs = yaml.load(f, yaml.FullLoader)
 
-  # Create dataset
-  dataset = TinyImagenet(configs['dataset']['dir'])
+  os.makedirs(configs['save'], exist_ok=True)
 
   # Run flask app
   app.run(
