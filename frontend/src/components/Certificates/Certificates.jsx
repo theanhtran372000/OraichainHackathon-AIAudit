@@ -5,7 +5,7 @@ const cx = classNames.bind(style);
 import { Link } from "react-router-dom";
 import SearchBox from "../SearchBox";
 import "./Certificates.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectWallet } from "../../features/wallet/walletSlice";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
@@ -87,6 +87,11 @@ const Dataset = (props) => {
   );
 };
 const Form = () => {
+  const nameInputRef = useRef();
+  const apiInputRef = useRef();
+  const [task, setTask] = useState();
+  const folderInputRef = useRef();
+
   const dataset = {
     name: "MNIST",
     owner: "Open AI",
@@ -94,8 +99,25 @@ const Form = () => {
     used: 102,
     fee: 0.02,
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const enteredName = nameInputRef.current.value;
+    const enteredApi = apiInputRef.current.value;
+    // const enteredTask = taskInputRef.current.value;
+    const enteredFolder = folderInputRef.current.value;
+
+    const data = {
+      data: enteredName,
+      api: enteredApi,
+      task: task,
+      folder: enteredFolder,
+    };
+
+    console.log("data", enteredFolder);
+  };
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <Row>
         <div className={cx("form-title")}>Audit new API</div>
       </Row>
@@ -108,7 +130,7 @@ const Form = () => {
           <label>Model name</label>
         </Col>
         <Col>
-          <input type="text" className={cx("input")} />
+          <input type="text" className={cx("input")} ref={nameInputRef} />
         </Col>
       </Row>
       <Row className={cx("row-input")}>
@@ -116,7 +138,7 @@ const Form = () => {
           <label>API</label>
         </Col>
         <Col>
-          <input type="text" className={cx("input")} />
+          <input type="text" className={cx("input")} ref={apiInputRef} />
         </Col>
       </Row>
       <Row className={cx("row-input")}>
@@ -142,6 +164,7 @@ const Form = () => {
                 label: "Classification",
               },
             ]}
+            onChange={(value) => setTask(value)}
           />
         </Col>
       </Row>
@@ -153,7 +176,27 @@ const Form = () => {
       </div>
 
       <Row className={cx("btn-add-data")}>
-        <label htmlFor="filepicker">Add dataset</label>
+        {/* <label htmlFor="filepicker">Add dataset</label> */}
+        <Select
+          defaultValue=""
+          style={{
+            width: 130,
+            height: 25,
+            color: "white",
+          }}
+          bordered={false}
+          options={[
+            {
+              value: "mnist",
+              label: "Detection",
+            },
+            {
+              value: "classification",
+              label: "Classification",
+            },
+          ]}
+          onChange={(value) => setTask(value)}
+        />
       </Row>
 
       <input
@@ -162,8 +205,9 @@ const Form = () => {
         name="fileList"
         multiple
         // directory=""
-        webkitdirectory=""
+        // webkitdirectory=""
         hidden
+        ref={folderInputRef}
       />
 
       <div className={cx("dataset-name")} style={{ marginTop: 40 }}>

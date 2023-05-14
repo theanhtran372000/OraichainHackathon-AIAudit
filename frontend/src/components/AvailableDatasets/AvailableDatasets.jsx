@@ -2,6 +2,7 @@ import { Row, Col, Select } from "antd";
 import classNames from "classnames/bind";
 import style from "./AvailableDatasets.module.sass";
 import SearchBox from "../SearchBox";
+import { useState, useRef } from "react";
 
 const cx = classNames.bind(style);
 // import "./Certificates.css";
@@ -32,6 +33,13 @@ const Dataset = ({ dataset }) => {
   );
 };
 const Form = () => {
+  const nameRef = useRef();
+  const taslkRef = useRef();
+  const mainApiRef = useRef();
+  const heartBeat = useRef();
+  const handlerSubmit = (e) => {
+    // e.stop
+  };
   return (
     <form>
       <Row>
@@ -137,12 +145,16 @@ const AvailableDatasets = () => {
       style={{ marginTop: "85px", marginBottom: 100, flexDirection: "column" }}
     >
       <Row className={cx("header")}>
-        <Col>
-          <div className={cx("title")}>Available datasets</div>
+        <Col span={16} className={cx("big-column")}>
+          <Row
+            style={{ justifyContent: "space-between", alignItems: "center" }}
+          >
+            <div className={cx("title")}>Available datasets</div>
+            <SearchBox />
+          </Row>
         </Col>
-        <Col>
-          <SearchBox />
-        </Col>
+
+        <Col span={8}></Col>
       </Row>
 
       <Row style={{ width: "100%" }}>
