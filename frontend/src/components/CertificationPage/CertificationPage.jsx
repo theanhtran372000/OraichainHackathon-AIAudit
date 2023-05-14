@@ -24,6 +24,27 @@ const RenderList = ({ data }) => {
     </Row>
   );
 };
+const RenderListURL = ({ data }) => {
+  return (
+    <>
+      {Object.entries(data).map(([key, value]) => {
+        return (
+          <>
+            <Row style={{ marginTop: 12, marginBottom: 12 }}>
+              <Col span={7} className={cx("label")}>
+                {key.toUpperCase()}
+              </Col>
+
+              <Col span={17} className={cx("info")}>
+                {value}
+              </Col>
+            </Row>
+          </>
+        );
+      })}
+    </>
+  );
+};
 const CertificationPage = () => {
   const location = useLocation();
   const { api, task, hearbeat, model_name, report } = location.state;
@@ -53,11 +74,11 @@ const CertificationPage = () => {
             />
             <hr />
             <Row className={cx("card-title")}>API</Row>
-            <RenderList data={{ api, hearbeat }} />
+            <RenderListURL data={{ api, hearbeat }} />
             <hr />
 
             <Row className={cx("card-title")}>Dataset</Row>
-            <RenderList data={{ api, task }} />
+            <RenderListURL data={{ api, task }} />
           </div>
         </div>
       </section>

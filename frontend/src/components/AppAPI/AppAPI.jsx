@@ -162,22 +162,22 @@ const AppAPI = ({ requests }) => {
       style={{ marginTop: "85px", flexDirection: "column" }}
     >
       <Row className={cx("header")}>
-        <Col span={8}></Col>
-        <Col span={16} className={cx("big-column")}>
+        {/* <Col span={8}></Col> */}
+        <Col span={24} className={cx("big-column")}>
           <Row
             style={{ justifyContent: "space-between", alignItems: "center" }}
           >
             <SearchBox />
-            <div className={cx("title")}>Your APIs</div>
+            <div className={cx("title")}>Your wait list APIs</div>
           </Row>
         </Col>
       </Row>
 
       <Row style={{ width: "100%" }}>
-        <Col span={8} className={cx("form-wrapper")}>
+        {/* <Col span={8} className={cx("form-wrapper")}>
           <Form />
-        </Col>
-        <Col span={16} className={cx("big-column")}>
+        </Col> */}
+        <Col span={24} className={cx("big-column")}>
           {requests.map((request) => {
             console.log(request);
             return (

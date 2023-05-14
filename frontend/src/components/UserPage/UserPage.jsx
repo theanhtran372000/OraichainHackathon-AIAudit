@@ -17,6 +17,11 @@ const UserPage = () => {
   const [certs, setCerts] = useState([]);
   const [requests, setRequests] = useState([]);
 
+  // const getDatasetInfo = async () => {
+  //   try {
+  //   } catch {}
+  // };
+
   useEffect(() => {
     const fetchCert = async () => {
       const client = await CosmWasmClient.connect(config_network.rpc);
@@ -40,6 +45,7 @@ const UserPage = () => {
     };
     fetchCert().catch((err) => console.error(err));
   }, [address]);
+
   return (
     <>
       <Profile />

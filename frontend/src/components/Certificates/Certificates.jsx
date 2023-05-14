@@ -5,6 +5,14 @@ const cx = classNames.bind(style);
 import { Link } from "react-router-dom";
 import SearchBox from "../SearchBox";
 import "./Certificates.css";
+import { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { selectWallet } from "../../features/wallet/walletSlice";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import config from "../../config/cosmjs.config";
+import { CONTRACT_MANAGER } from "../../config/constants";
+
+let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
 const Certificate = ({ cert }) => {
   const { api, task, hearbeat, model_name, id } = cert;
@@ -20,7 +28,7 @@ const Certificate = ({ cert }) => {
           <div className={cx("label")}>API</div>
         </Col>
         <Col span={19}>
-          <div className={cx("info")}>{api}</div>
+          <div className={cx("info")}>{`${api.slice(0, 50)}...`}</div>
         </Col>
         <Col span={5}>
           <div className={cx("label")}>Task</div>
@@ -79,6 +87,10 @@ const Dataset = (props) => {
   );
 };
 const Form = () => {
+  const nameInputRef = useRef();
+  const apiInputRef = useRef();
+  const [task, setTask] = useState();
+
   const dataset = {
     name: "MNIST",
     owner: "Open AI",
@@ -86,8 +98,42 @@ const Form = () => {
     used: 102,
     fee: 0.02,
   };
+
+  const getDataListByTask = () => {
+    const reponse = fetch("http://127.0.0.1:7000/get-dataset-list", {
+      method: "POST",
+      body: {
+        mode: "formdata",
+        // formdata:
+      },
+      headers: {
+        "Content-Type": "applications/form-data",
+      },
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const enteredName = nameInputRef.current.value;
+    const enteredApi = apiInputRef.current.value;
+    // const enteredTask = taskInputRef.current.value;
+
+    const data = {
+      data: enteredName,
+      api: enteredApi,
+      task: task,
+    };
+
+    console.log("data", data);
+  };
+
+  useEffect(() => {
+    getDataListByTask();
+  }, [task]);
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <Row>
         <div className={cx("form-title")}>Audit new API</div>
       </Row>
@@ -100,7 +146,7 @@ const Form = () => {
           <label>Model name</label>
         </Col>
         <Col>
-          <input type="text" className={cx("input")} />
+          <input type="text" className={cx("input")} ref={nameInputRef} />
         </Col>
       </Row>
       <Row className={cx("row-input")}>
@@ -108,13 +154,14 @@ const Form = () => {
           <label>API</label>
         </Col>
         <Col>
-          <input type="text" className={cx("input")} />
+          <input type="text" className={cx("input")} ref={apiInputRef} />
         </Col>
       </Row>
       <Row className={cx("row-input")}>
         <Col>
           <label>Task</label>
         </Col>
+
         <Col>
           <Select
             defaultValue=""
@@ -134,6 +181,7 @@ const Form = () => {
                 label: "Classification",
               },
             ]}
+            onChange={(value) => setTask(value)}
           />
         </Col>
       </Row>
@@ -144,31 +192,43 @@ const Form = () => {
         <Dataset dataset={dataset} />
       </div>
 
-      <Row className={cx("btn-add-data")}>
-        <label htmlFor="filepicker">Add dataset</label>
-      </Row>
-
-      <input
-        type="file"
-        id="filepicker"
-        name="fileList"
-        multiple
-        // directory=""
-        webkitdirectory=""
-        hidden
-      />
+      {/* <Row className={cx("btn-add-data")}>
+        <Select
+          defaultValue=""
+          style={{
+            width: 130,
+            height: 25,
+            color: "white",
+          }}
+          bordered={false}
+          options={[
+            {
+              value: "mnist",
+              label: "Detection",
+            },
+            {
+              value: "classification",
+              label: "Classification",
+            },
+          ]}
+          onChange={(value) => setTask(value)}
+        />
+      </Row> */}
 
       <div className={cx("dataset-name")} style={{ marginTop: 40 }}>
         Fee calculation
       </div>
+
       <Row className={cx("dataset-row")}>
         <Col span={12}>Dataset</Col>
         <Col>{123} ORAI</Col>
       </Row>
+
       <Row className={cx("dataset-row")}>
         <Col span={12}>Audit</Col>
         <Col>{12} ORAI</Col>
       </Row>
+
       <Row style={{ marginBottom: 25 }} className={cx("dataset-row")}>
         <Col span={12}>Total</Col>
         <Col>{4123} ORAI</Col>
