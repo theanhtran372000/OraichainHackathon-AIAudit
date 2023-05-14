@@ -91,6 +91,7 @@ const Form = () => {
   const nameInputRef = useRef();
   const apiInputRef = useRef();
   const [task, setTask] = useState();
+  const { username } = useSelector(selectWallet);
 
   const dataset = {
     name: "MNIST",
@@ -101,21 +102,22 @@ const Form = () => {
   };
 
   const getDataListByTask = () => {
-    const { username } = useSelector(selectWallet);
     const formData = new FormData();
     formData.append("user", username);
     formData.append("task", task);
 
     fetch("http://127.0.0.1:7000/get-dataset-list", {
       method: "POST",
-      // mode: "formdata",
-      body: formData,
+      mode: "no-cors",
+      body: {
+        mode: "formdata",
+        formData,
+      },
       headers: {
         "Content-Type": "applications/form-data",
       },
-    });
-
-    
+    }).then((response) => console.log("response", response));
+    // ;
   };
 
   const handleSubmit = (e) => {
@@ -130,13 +132,14 @@ const Form = () => {
       api: enteredApi,
       task: task,
     };
-
+    fetch("http://127.0.0.1:9000/audit",
+    )
     console.log("data", data);
   };
 
-  useEffect(() => {
-    getDataListByTask();
-  }, [task]);
+  // useEffect(() => {
+  //   getDataListByTask();
+  // }, [task]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -187,7 +190,8 @@ const Form = () => {
                 label: "Classification",
               },
             ]}
-            onChange={(value) => setTask(value)}
+            onChange={() => getDataListByTask()}
+            // onChange={(value) => setTask(value)}
           />
         </Col>
       </Row>
@@ -241,7 +245,7 @@ const Form = () => {
       </Row>
 
       <Row className={cx("btn-audit")}>
-        <button>Audit</button>
+        <button onClick={getDataListByTask}>Audit</button>
       </Row>
     </form>
   );

@@ -55,11 +55,14 @@ const Form = () => {
 
     fetch(`${import.meta.env.VITE_BASEURL}/upload-dataset`, {
       method: "POST",
+      mode: "no-cors",
       body: {
         mode: "formdata",
         formdata,
       },
-    }).catch((err) => console.error(err));
+    })
+      .then((res) => console.log("res", res))
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -96,11 +99,11 @@ const Form = () => {
             bordered={false}
             options={[
               {
-                value: "detection",
+                value: "od",
                 label: "Detection",
               },
               {
-                value: "classification",
+                value: "ic",
                 label: "Classification",
               },
             ]}
