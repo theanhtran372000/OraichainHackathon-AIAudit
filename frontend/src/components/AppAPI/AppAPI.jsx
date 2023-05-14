@@ -176,8 +176,8 @@ const AppAPI = ({ requests }) => {
       <Row style={{ width: "100%" }}>
         {/* <Col span={8} className={cx("form-wrapper")}>
           <Form />
-        </Col>
-        <Col span={16} className={cx("big-column")}>
+        </Col> */}
+        <Col span={24} className={cx("big-column")}>
           {requests.map((request) => {
             console.log(request);
             return (

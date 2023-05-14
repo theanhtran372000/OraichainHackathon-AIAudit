@@ -2,7 +2,7 @@ import { Row, Col, Select } from "antd";
 import classNames from "classnames/bind";
 import style from "./AvailableDatasets.module.sass";
 import SearchBox from "../SearchBox";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const cx = classNames.bind(style);
 // import "./Certificates.css";
@@ -34,14 +34,25 @@ const Dataset = ({ dataset }) => {
 };
 const Form = () => {
   const nameRef = useRef();
-  const taslkRef = useRef();
-  const mainApiRef = useRef();
-  const heartBeat = useRef();
+  const [task, setTask] = useState();
+  const fileRef = useRef();
+
   const handlerSubmit = (e) => {
-    // e.stop
+    const name = nameRef.current.value;
+    const file = fileRef.current.value;
+    e.preventDefault();
+
+    const data = {
+      name: name,
+      task: task,
+      file: file,
+    };
+
+    console.log("data", data);
   };
+
   return (
-    <form>
+    <form onSubmit={handlerSubmit}>
       <Row>
         <div className={cx("form-title")}>Add Dataset</div>
       </Row>
@@ -54,7 +65,7 @@ const Form = () => {
           <label>Name</label>
         </Col>
         <Col>
-          <input type="text" className={cx("input")} />
+          <input type="text" className={cx("input")} ref={nameRef} />
         </Col>
       </Row>
 
@@ -62,6 +73,7 @@ const Form = () => {
         <Col>
           <label>Task</label>
         </Col>
+
         <Col>
           <Select
             defaultValue=""
@@ -81,38 +93,31 @@ const Form = () => {
                 label: "Classification",
               },
             ]}
+            onChange={(value) => setTask(value)}
           />
         </Col>
       </Row>
+
       <Row>
         <div className={cx("form-sub-title")} style={{ marginTop: 80 }}>
           Dataset folder
         </div>
       </Row>
-      <Row className={cx("row-input")}>
-        <Col>
-          <label>Main API</label>
-        </Col>
-        <Col>
-          <input type="text" className={cx("input")} />
-        </Col>
+
+      <Row className={cx("btn-add-data")}>
+        <label htmlFor="filepicker">Add dataset</label>
       </Row>
-      <Row className={cx("row-input")}>
-        <Col>
-          <label>Heart beat</label>
-        </Col>
-        <Col>
-          <input type="text" className={cx("input")} />
-        </Col>
-      </Row>
-      <Row className={cx("row-input")}>
-        <Col>
-          <label>Secrete key</label>
-        </Col>
-        <Col>
-          <input type="text" className={cx("input")} />
-        </Col>
-      </Row>
+
+      <input
+        type="file"
+        id="filepicker"
+        name="fileList"
+        // multiple
+        // directory=""
+        // webkitdirectory=""
+        hidden
+        ref={fileRef}
+      />
 
       <div className={cx("dataset-name")} style={{ marginTop: 80 }}>
         Fee calculation

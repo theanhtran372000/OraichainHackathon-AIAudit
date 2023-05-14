@@ -28,7 +28,7 @@ const Certificate = ({ cert }) => {
           <div className={cx("label")}>API</div>
         </Col>
         <Col span={19}>
-          <div className={cx("info")}>{api}</div>
+          <div className={cx("info")}>{`${api.slice(0, 50)}...`}</div>
         </Col>
         <Col span={5}>
           <div className={cx("label")}>Task</div>
@@ -90,7 +90,6 @@ const Form = () => {
   const nameInputRef = useRef();
   const apiInputRef = useRef();
   const [task, setTask] = useState();
-  const folderInputRef = useRef();
 
   const dataset = {
     name: "MNIST",
@@ -99,23 +98,40 @@ const Form = () => {
     used: 102,
     fee: 0.02,
   };
+
+  const getDataListByTask = () => {
+    const reponse = fetch("http://127.0.0.1:7000/get-dataset-list", {
+      method: "POST",
+      body: {
+        mode: "formdata",
+        // formdata:
+      },
+      headers: {
+        "Content-Type": "applications/form-data",
+      },
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const enteredName = nameInputRef.current.value;
     const enteredApi = apiInputRef.current.value;
     // const enteredTask = taskInputRef.current.value;
-    const enteredFolder = folderInputRef.current.value;
 
     const data = {
       data: enteredName,
       api: enteredApi,
       task: task,
-      folder: enteredFolder,
     };
 
-    console.log("data", enteredFolder);
+    console.log("data", data);
   };
+
+  useEffect(() => {
+    getDataListByTask();
+  }, [task]);
+
   return (
     <form onSubmit={handleSubmit}>
       <Row>
@@ -145,6 +161,7 @@ const Form = () => {
         <Col>
           <label>Task</label>
         </Col>
+
         <Col>
           <Select
             defaultValue=""
@@ -175,8 +192,7 @@ const Form = () => {
         <Dataset dataset={dataset} />
       </div>
 
-      <Row className={cx("btn-add-data")}>
-        {/* <label htmlFor="filepicker">Add dataset</label> */}
+      {/* <Row className={cx("btn-add-data")}>
         <Select
           defaultValue=""
           style={{
@@ -197,30 +213,22 @@ const Form = () => {
           ]}
           onChange={(value) => setTask(value)}
         />
-      </Row>
-
-      <input
-        type="file"
-        id="filepicker"
-        name="fileList"
-        multiple
-        // directory=""
-        // webkitdirectory=""
-        hidden
-        ref={folderInputRef}
-      />
+      </Row> */}
 
       <div className={cx("dataset-name")} style={{ marginTop: 40 }}>
         Fee calculation
       </div>
+
       <Row className={cx("dataset-row")}>
         <Col span={12}>Dataset</Col>
         <Col>{123} ORAI</Col>
       </Row>
+
       <Row className={cx("dataset-row")}>
         <Col span={12}>Audit</Col>
         <Col>{12} ORAI</Col>
       </Row>
+
       <Row style={{ marginBottom: 25 }} className={cx("dataset-row")}>
         <Col span={12}>Total</Col>
         <Col>{4123} ORAI</Col>

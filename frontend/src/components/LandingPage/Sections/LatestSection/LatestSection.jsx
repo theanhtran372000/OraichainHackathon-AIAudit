@@ -91,7 +91,7 @@ export const LatestSection = () => {
                       return (
                         <div key={k} className={cx("info")}>
                           <p>{k}</p>
-                          <p>{v}</p>
+                          <p>{v.length > 20 ? `${v.slice(0, 20)}...` : v}</p>
                         </div>
                       );
                     })}
