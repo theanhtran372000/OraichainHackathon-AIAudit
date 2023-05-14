@@ -3,6 +3,7 @@ import classNames from "classnames/bind";
 import style from "./AvailableDatasets.module.sass";
 import SearchBox from "../SearchBox";
 import { useState, useRef, useEffect } from "react";
+import { serialize } from "object-to-formdata";
 
 const cx = classNames.bind(style);
 // import "./Certificates.css";
@@ -37,7 +38,7 @@ const Form = () => {
   const [task, setTask] = useState();
   const fileRef = useRef();
 
-  const handlerSubmit = (e) => {
+  const handlerSubmit = async (e) => {
     const name = nameRef.current.value;
     const file = fileRef.current.value;
     e.preventDefault();
@@ -48,7 +49,17 @@ const Form = () => {
       file: file,
     };
 
-    console.log("data", data);
+    console.log(data);
+
+    let formdata = serialize(data);
+
+    fetch(`${import.meta.env.VITE_BASEURL}/upload-dataset`, {
+      method: "POST",
+      body: {
+        mode: "formdata",
+        formdata,
+      },
+    }).catch((err) => console.error(err));
   };
 
   return (
