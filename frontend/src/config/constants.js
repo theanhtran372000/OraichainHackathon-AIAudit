@@ -1,4 +1,4 @@
 export const CONTRACT_MANAGER =
-  "orai1zntyngsthquch8v0unk2d2zdwk5ukat898zxgtljppftwhj5jg8s8vqqg5";
+  "orai1ty4nel76ktfuc6td9snqzpqqmw9ydhn5wd9j8c3dlfk9v2kpsd3qh5sdj2";
 export const CONTRACT_AGGREGATOR =
-  "orai1j29g7rc9udrh50tr6629rnxm4357tysxkp7qflq5g9mmdp46j2fqmnygya";
+  "orai1v6rsjdyckg3v22ryr5e064rcjw69e0t3dm4glvew2d0kqhwr76ks694z9r";

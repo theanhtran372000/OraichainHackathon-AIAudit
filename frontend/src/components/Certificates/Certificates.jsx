@@ -5,14 +5,6 @@ const cx = classNames.bind(style);
 import { Link } from "react-router-dom";
 import SearchBox from "../SearchBox";
 import "./Certificates.css";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { selectWallet } from "../../features/wallet/walletSlice";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import config from "../../config/cosmjs.config";
-import { CONTRACT_MANAGER } from "../../config/constants";
-
-let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
 const Certificate = ({ cert }) => {
   const { api, task, hearbeat, model_name, id } = cert;
@@ -189,25 +181,7 @@ const Form = () => {
   );
 };
 
-const Certificates = () => {
-  const { address } = useSelector(selectWallet);
-
-  const [certs, setCerts] = useState([]);
-
-  useEffect(() => {
-    const fetchCert = async () => {
-      const client = await CosmWasmClient.connect(config_network.rpc);
-      let res = await client.queryContractSmart(CONTRACT_MANAGER, {
-        list_valid_api: {
-          limit: 6,
-          verifier: address,
-        },
-      });
-      setCerts(res.verifier_list);
-    };
-    fetchCert().catch((err) => console.error(err));
-  }, [address]);
-
+const Certificates = ({ certs }) => {
   return (
     <section
       className="container"
