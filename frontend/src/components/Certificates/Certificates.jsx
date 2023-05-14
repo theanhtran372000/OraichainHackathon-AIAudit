@@ -11,6 +11,7 @@ import { selectWallet } from "../../features/wallet/walletSlice";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import config from "../../config/cosmjs.config";
 import { CONTRACT_MANAGER } from "../../config/constants";
+import { serialize } from "object-to-formdata";
 
 let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
@@ -100,16 +101,21 @@ const Form = () => {
   };
 
   const getDataListByTask = () => {
-    const reponse = fetch("http://127.0.0.1:7000/get-dataset-list", {
+    const { username } = useSelector(selectWallet);
+    const formData = new FormData();
+    formData.append("user", username);
+    formData.append("task", task);
+
+    fetch("http://127.0.0.1:7000/get-dataset-list", {
       method: "POST",
-      body: {
-        mode: "formdata",
-        // formdata:
-      },
+      // mode: "formdata",
+      body: formData,
       headers: {
         "Content-Type": "applications/form-data",
       },
     });
+
+    
   };
 
   const handleSubmit = (e) => {
@@ -173,11 +179,11 @@ const Form = () => {
             bordered={false}
             options={[
               {
-                value: "detection",
+                value: "od",
                 label: "Detection",
               },
               {
-                value: "classification",
+                value: "ic",
                 label: "Classification",
               },
             ]}
