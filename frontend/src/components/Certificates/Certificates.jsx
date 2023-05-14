@@ -11,6 +11,8 @@ import { selectWallet } from "../../features/wallet/walletSlice";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import config from "../../config/cosmjs.config";
 import { CONTRACT_MANAGER } from "../../config/constants";
+import { serialize } from "object-to-formdata";
+
 
 let config_network = config.networks[import.meta.env.VITE_NETWORK];
 
@@ -60,28 +62,53 @@ const Certificate = ({ cert }) => {
   );
 };
 
-const Dataset = (props) => {
-  const { name, owner, samples, used, fee } = props.dataset;
+const Dataset = ({ dataset }) => {
+  const [dataInfo, setDataInfo] = useState();
+  const { address } = useSelector(selectWallet);
+  const data = {
+    user: address,
+    dataset: dataset,
+  };
+  let formData = serialize(data);
+
+  useEffect(() => {
+    const getDataInfo = async () => {
+      const response = await fetch(
+        "http://127.0.0.1:7000/get-dataset-info",
+
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      let json = await response.json();
+      setDataInfo(json);
+    };
+    getDataInfo().catch((e) => console.log(e));
+  });
+
   return (
     <>
       <Row>
-        <div className={cx("dataset-name")}>Dataset: {name}</div>
+        <div className={cx("dataset-name")}>Dataset: {dataset}</div>
       </Row>
       <Row className={cx("dataset-row")}>
         <Col span={12}>Owner</Col>
-        <Col>{owner}</Col>
+        <Col>{dataInfo?.owner}</Col>
       </Row>
+
       <Row className={cx("dataset-row")}>
         <Col span={12}>Samples</Col>
-        <Col>{samples}</Col>
+        <Col>{dataInfo?.len}</Col>
       </Row>
+
       <Row className={cx("dataset-row")}>
-        <Col span={12}>Used</Col>
-        <Col>{used}</Col>
+        <Col span={12}>Task</Col>
+        <Col>{dataInfo?.task}</Col>
       </Row>
       <Row style={{ marginBottom: 25 }} className={cx("dataset-row")}>
-        <Col span={12}>Fee</Col>
-        <Col>{fee} ORAI</Col>
+        <Col span={12}>Time</Col>
+        <Col>{dataInfo?.time}</Col>
       </Row>
     </>
   );
@@ -90,29 +117,12 @@ const Form = () => {
   const nameInputRef = useRef();
   const apiInputRef = useRef();
   const [task, setTask] = useState();
+  const [dataList, setDataList] = useState([]);
 
-  const dataset = {
-    name: "MNIST",
-    owner: "Open AI",
-    samples: 1092,
-    used: 102,
-    fee: 0.02,
-  };
+  const { address } = useSelector(selectWallet);
 
-  const getDataListByTask = () => {
-    const reponse = fetch("http://127.0.0.1:7000/get-dataset-list", {
-      method: "POST",
-      body: {
-        mode: "formdata",
-        // formdata:
-      },
-      headers: {
-        "Content-Type": "applications/form-data",
-      },
-    });
-  };
 
-  const handleSubmit = (e) => {
+  const audit = async (e) => {
     e.preventDefault();
 
     const enteredName = nameInputRef.current.value;
@@ -120,20 +130,49 @@ const Form = () => {
     // const enteredTask = taskInputRef.current.value;
 
     const data = {
-      data: enteredName,
-      api: enteredApi,
-      task: task,
+      // data: enteredName,
+      api: "http://127.0.0.1:8000/mobilenetv2-image-classification",
+      task: "ic",
+      address: "theanh",
+      model_name: "Yunet Face Detection",
+      dataset_name: "tiny_imagenet",
     };
 
-    console.log("data", data);
+    let formData = serialize(data);
+    const response = await fetch("http://127.0.0.1:9000/audit", {
+      method: "POST",
+      body: formData,
+    });
+
+    const json = await response.json();
+
+    console.log("audit", json);
   };
 
   useEffect(() => {
-    getDataListByTask();
+    const getDataListByTask = async () => {
+      const data = {
+        user: address,
+        task: task,
+      };
+  
+      let formData = serialize(data);
+      const response = await fetch("http://127.0.0.1:7000/get-dataset-list", {
+        method: "POST",
+        body: formData,
+      });
+  
+      let json = await response.json();
+      setDataList(json.result);
+      // console.log(json);
+    };
+  
+    getDataListByTask().catch(err => console.log(err));
+
   }, [task]);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={audit}>
       <Row>
         <div className={cx("form-title")}>Audit new API</div>
       </Row>
@@ -173,23 +212,25 @@ const Form = () => {
             bordered={false}
             options={[
               {
-                value: "detection",
+                value: "ic",
                 label: "Detection",
               },
               {
-                value: "classification",
+                value: "od",
                 label: "Classification",
               },
             ]}
-            onChange={(value) => setTask(value)}
+            onChange={(value) => {
+              setTask(value);
+            }}
           />
         </Col>
       </Row>
 
       <div className={cx("scrollable")}>
-        <Dataset dataset={dataset} />
-        <Dataset dataset={dataset} />
-        <Dataset dataset={dataset} />
+        {dataList && dataList.map((item) => {
+          return <Dataset dataset={item} />;
+        })}
       </div>
 
       {/* <Row className={cx("btn-add-data")}>
