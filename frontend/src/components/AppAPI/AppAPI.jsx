@@ -5,7 +5,7 @@ import SearchBox from "../SearchBox";
 const cx = classNames.bind(style);
 
 const APICard = ({ apiModel }) => {
-  const { modelUrl, uploadTime, task } = apiModel;
+  const { api, deadline, model_name, task, status } = apiModel;
 
   return (
     <div className={cx("card")}>
@@ -13,19 +13,33 @@ const APICard = ({ apiModel }) => {
         <Col span={5}>
           <div className={cx("label")}>Model name</div>
         </Col>
-        <Col>{modelUrl}</Col>
+        <Col>{model_name}</Col>
       </Row>
       <Row className={cx("row-card")}>
         <Col span={5}>
-          <div className={cx("label")}>Upload time</div>
+          <div className={cx("label")}>URL</div>
         </Col>
-        <Col>{uploadTime}</Col>
+        <Col>{api}</Col>
+      </Row>
+      <Row className={cx("row-card")}>
+        <Col span={5}>
+          <div className={cx("label")}>Deadline</div>
+        </Col>
+        <Col>{deadline}</Col>
       </Row>
       <Row className={cx("row-card")}>
         <Col span={5}>
           <div className={cx("label")}>Task</div>
         </Col>
         <Col style={{ color: "#FFD95A" }}>{task}</Col>
+      </Row>
+      <Row className={cx("row-card")}>
+        <Col span={5}>
+          <div className={cx("label")}>Status</div>
+        </Col>
+        <Col style={{ color: "#FFD95A" }}>
+          {status == "success" ? status : "pending"}
+        </Col>
       </Row>
     </div>
   );
@@ -135,12 +149,12 @@ const Form = () => {
     </form>
   );
 };
-const AppAPI = () => {
-  const apiModel = {
-    modelUrl: "https://ai.marketplace.orai.io/face_detection",
-    uploadTime: "2022-05-03",
-    task: "Object Detection",
-  };
+const AppAPI = ({ requests }) => {
+  // const apiModel = {
+  //   modelUrl: "https://ai.marketplace.orai.io/face_detection",
+  //   uploadTime: "2022-05-03",
+  //   task: "Object Detection",
+  // };
 
   return (
     <section
@@ -162,12 +176,21 @@ const AppAPI = () => {
       <Row style={{ width: "100%" }}>
         {/* <Col span={8} className={cx("form-wrapper")}>
           <Form />
-        </Col> */}
-        <Col span={24} className={cx("big-column")}>
-          <APICard apiModel={apiModel} />
-          <APICard apiModel={apiModel} />
-          <APICard apiModel={apiModel} />
-          <APICard apiModel={apiModel} />
+        </Col>
+        <Col span={16} className={cx("big-column")}>
+          {requests.map((request) => {
+            console.log(request);
+            return (
+              <APICard
+                key={request.id}
+                apiModel={{
+                  ...request.info,
+                  deadline: request.deadline,
+                  status: request.status,
+                }}
+              />
+            );
+          })}
         </Col>
       </Row>
     </section>

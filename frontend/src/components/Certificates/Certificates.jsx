@@ -233,25 +233,7 @@ const Form = () => {
   );
 };
 
-const Certificates = () => {
-  const { address } = useSelector(selectWallet);
-
-  const [certs, setCerts] = useState([]);
-
-  useEffect(() => {
-    const fetchCert = async () => {
-      const client = await CosmWasmClient.connect(config_network.rpc);
-      let res = await client.queryContractSmart(CONTRACT_MANAGER, {
-        list_valid_api: {
-          limit: 6,
-          verifier: address,
-        },
-      });
-      setCerts(res.verifier_list);
-    };
-    fetchCert().catch((err) => console.error(err));
-  }, [address]);
-
+const Certificates = ({ certs }) => {
   return (
     <section
       className="container"
