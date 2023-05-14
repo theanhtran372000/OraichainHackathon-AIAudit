@@ -3,7 +3,9 @@ import classNames from "classnames/bind";
 import style from "./AvailableDatasets.module.sass";
 import SearchBox from "../SearchBox";
 import { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { serialize } from "object-to-formdata";
+import { selectWallet } from "../../features/wallet/walletSlice";
 
 const cx = classNames.bind(style);
 // import "./Certificates.css";
@@ -37,6 +39,7 @@ const Form = () => {
   const nameRef = useRef();
   const [task, setTask] = useState();
   const fileRef = useRef();
+  const { address } = useSelector(selectWallet);
 
   const handlerSubmit = async (e) => {
     const name = nameRef.current.value;
@@ -44,22 +47,26 @@ const Form = () => {
     e.preventDefault();
 
     const data = {
-      name: name,
+      dataset: name,
       task: task,
-      file: file,
+      zipfile: file,
+      user: address,
     };
 
-    console.log(data);
+    // console.log(data);
 
     let formdata = serialize(data);
 
-    fetch(`${import.meta.env.VITE_BASEURL}/upload-dataset`, {
-      method: "POST",
-      body: {
-        mode: "formdata",
-        formdata,
-      },
-    }).catch((err) => console.error(err));
+    const response = await fetch(
+      `${import.meta.env.VITE_BASEURL}/upload-dataset`,
+      {
+        method: "POST",
+        body: formdata,
+      }
+    );
+
+    let json = await response.json();
+    console.log("upfile", json);
   };
 
   return (
@@ -96,11 +103,11 @@ const Form = () => {
             bordered={false}
             options={[
               {
-                value: "detection",
+                value: "od",
                 label: "Detection",
               },
               {
-                value: "classification",
+                value: "ic",
                 label: "Classification",
               },
             ]}
